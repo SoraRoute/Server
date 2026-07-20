@@ -1,8 +1,14 @@
 const ai = require("../Config/gemini");
 const aiRepository = require("../Repositories/aiRepository");
+
 class AiService {
+  // Author: Nishtha
+  // Generate an AI response based on the available products.
   async chat(message) {
+    // Fetch a limited set of products to include in the AI prompt.
     const products = (await aiRepository.getProductsForAI()).slice(0, 20);
+
+    // Build the prompt with store rules and product data.
     const prompt = `
 You are an AI shopping assistant for MarketHive.
 
@@ -28,7 +34,9 @@ ${JSON.stringify(products)}
 Customer question:
 ${message}
 `;
+
     try {
+      // Send the prompt to the Gemini model.
       const response = await ai.models.generateContent({
         model: "models/gemma-4-26b-a4b-it",
         contents: prompt,
@@ -39,14 +47,17 @@ ${message}
         reply: response.text,
       };
     } catch (error) {
+      // Handle temporary AI service unavailability.
       if (error.status === 503) {
         throw new Error(
           "AI service is temporarily busy. Please try again in a few minutes.",
         );
       }
 
+      // Handle all other unexpected errors.
       throw new Error("Unable to process your request.");
     }
   }
 }
+
 module.exports = new AiService();

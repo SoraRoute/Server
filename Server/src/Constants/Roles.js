@@ -1,28 +1,15 @@
 /**
  * Shared Module
  *
- * This file is used by both Customer and Seller modules.
- * Changes to this file may affect multiple parts of the application.
- * Discuss breaking changes with the team before modifying.
+ * Used by Customer, Seller, and Admin modules.
+ * Defines the user roles used across the application.
+ *
+ * Authors: Nishtha & Pinki
  */
-/**
- * ---------------------------------------------------------
- * Application Roles
- * ---------------------------------------------------------
- * Central location for user roles.
- *
- * CUSTOMER
- * SELLER
- * ADMIN
- *
- * Prevents hardcoding role strings throughout
- * the application.
- *
- * Author: Shared Module
- * ---------------------------------------------------------
- */
-module.exports={
-    CUSTOMER:"customer",
-    SELLER:"seller",
-    ADMIN:"admin"
+
+// User role constants.
+module.exports = {
+  CUSTOMER: "customer",
+  SELLER: "seller",
+  ADMIN: "admin",
 };

@@ -1,6 +1,8 @@
 const customerReviewService = require("../Services/customerReviewService");
 
 class CustomerReviewController {
+  // Author: Nishtha
+  // Add a review for a product.
   async addReview(req, res) {
     try {
       const result = await customerReviewService.addReview(
@@ -9,6 +11,7 @@ class CustomerReviewController {
         req.body.rating,
         req.body.comment,
       );
+
       return res.status(201).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -17,11 +20,14 @@ class CustomerReviewController {
       });
     }
   }
+
+  // Get all reviews of a product.
   async getReviews(req, res) {
     try {
       const result = await customerReviewService.getReviews(
         req.params.productId,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -30,6 +36,8 @@ class CustomerReviewController {
       });
     }
   }
+
+  // Update an existing review.
   async updateReview(req, res) {
     try {
       const result = await customerReviewService.updateReview(
@@ -38,6 +46,7 @@ class CustomerReviewController {
         req.body.rating,
         req.body.comment,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -46,6 +55,8 @@ class CustomerReviewController {
       });
     }
   }
+
+  // Delete a review.
   async deleteReview(req, res) {
     try {
       const result = await customerReviewService.deleteReview(
@@ -62,4 +73,5 @@ class CustomerReviewController {
     }
   }
 }
+
 module.exports = new CustomerReviewController();

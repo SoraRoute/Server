@@ -1,52 +1,24 @@
 /**
  * Shared Module
  *
- * This file is used by both Customer and Seller modules.
- * Changes to this file may affect multiple parts of the application.
- * Discuss breaking changes with the team before modifying.
+ * Used by Customer, Seller, and Admin authentication.
+ * This helper handles password hashing and password verification.
+ *
+ * Authors: Nishtha & Pinki
  */
-/**
- * ---------------------------------------------------------
- * Password Utility
- * ---------------------------------------------------------
- * Handles password hashing and password comparison.
- *
- * Uses bcrypt.
- *
- * Shared by:
- * - Customer Authentication
- * - Seller Authentication
- * - Admin Authentication
- *
- * Never store plain text passwords.
- *
- * Author: Shared Module
- * ---------------------------------------------------------
- */
-const bcrypt=require("bcrypt");
 
-class Password{
+const bcrypt = require("bcrypt");
 
+class Password {
+  // Convert a plain password into a hashed password.
+  async hashPassword(password) {
+    return await bcrypt.hash(password, 10);
+  }
 
-/**
-     * Converts a plain-text password into a secure hashed password.
-     *
-     * @param {string} password - User's plain-text password
-     * @returns {string} Hashed password
-     */
+  // Compare the entered password with the stored hash.
+  async comparePassword(password, hashedPassword) {
+    return await bcrypt.compare(password, hashedPassword);
+  }
+}
 
-    async hashPassword(password){
-        return await bcrypt.hash(password,10);}
-        /**
-     * Compares the entered password with the hashed password
-     * stored in the database.
-     *
-     * @param {string} password - Password entered by user
-     * @param {string} hashedPassword - Password stored in database
-     * @returns {boolean} True if passwords match
-     */
-        async comparePassword(password, hashedPassword){
-            return await bcrypt.compare(password, hashedPassword);
-        }
-    }
-    module.exports = new Password();
+module.exports = new Password();

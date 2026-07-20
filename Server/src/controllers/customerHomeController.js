@@ -1,8 +1,12 @@
 const customerHomeService = require("../Services/customerHomeService");
+
 class CustomerHomeController {
+  // Author: Nishtha
+  // Get all data required for the home page.
   async getHomePage(req, res) {
     try {
       const result = await customerHomeService.getHomePage();
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -12,4 +16,5 @@ class CustomerHomeController {
     }
   }
 }
+
 module.exports = new CustomerHomeController();

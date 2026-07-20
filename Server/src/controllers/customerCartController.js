@@ -1,5 +1,8 @@
 const customerCartService = require("../Services/customerCartService");
+
 class CustomerCartController {
+  // Author: Nishtha
+  // Add a product to the customer's cart.
   async addToCart(req, res) {
     try {
       const result = await customerCartService.addToCart(
@@ -7,6 +10,7 @@ class CustomerCartController {
         req.params.productId,
         req.body.quantity,
       );
+
       return res.status(201).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -15,9 +19,12 @@ class CustomerCartController {
       });
     }
   }
+
+  // Get all products in the customer's cart.
   async getCart(req, res) {
     try {
       const result = await customerCartService.getCart(req.user.customerId);
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -26,6 +33,8 @@ class CustomerCartController {
       });
     }
   }
+
+  // Update the quantity of a cart item.
   async updateCartItem(req, res) {
     try {
       const result = await customerCartService.updateCartItem(
@@ -33,6 +42,7 @@ class CustomerCartController {
         req.params.productId,
         req.body.quantity,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -41,12 +51,15 @@ class CustomerCartController {
       });
     }
   }
+
+  // Remove a product from the customer's cart.
   async removeFromCart(req, res) {
     try {
       const result = await customerCartService.removeFromCart(
         req.user.customerId,
         req.params.productId,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -56,4 +69,5 @@ class CustomerCartController {
     }
   }
 }
+
 module.exports = new CustomerCartController();

@@ -1,16 +1,20 @@
-class CookieHelper{
-    setAuthCookie(res,token){
+class CookieHelper {
+  // Authors: Nishtha & Pinki
 
-        res.cookie("access_token",token,{
-            httpOnly:true,
-            secure:false,
-            sameSite:"lax",
-            maxAge:24*60*60*1000
-        });
-    }
-    clearAuthCookie(res){
+  // Set the authentication cookie after successful login.
+  setAuthCookie(res, token) {
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+  }
 
-        res.clearCookie("access_token");
-    }
+  // Clear the authentication cookie during logout.
+  clearAuthCookie(res) {
+    res.clearCookie("access_token");
+  }
 }
+
 module.exports = new CookieHelper();

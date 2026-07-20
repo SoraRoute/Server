@@ -2,9 +2,12 @@ const customerService = require("../Services/customerService");
 const cookieHelper = require("../Utils/cookieHelper");
 
 class CustomerController {
+  // Author: Nishtha
+  // Register a new customer.
   async registerCustomer(req, res) {
     try {
       const result = await customerService.registerCustomer(req.body);
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -13,6 +16,8 @@ class CustomerController {
       });
     }
   }
+
+  // Verify the email using the OTP.
   async verifyEmail(req, res) {
     try {
       const customerData = {
@@ -23,10 +28,12 @@ class CustomerController {
         password: req.body.password,
         role: "customer",
       };
+
       const result = await customerService.verifyEmail(
         customerData,
         req.body.otp,
       );
+
       return res.status(201).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -35,10 +42,14 @@ class CustomerController {
       });
     }
   }
+
+  // Authenticate the customer and set the login cookie.
   async loginCustomer(req, res) {
     try {
       const result = await customerService.loginCustomer(req.body);
+
       cookieHelper.setAuthCookie(res, result.token);
+
       return res.status(200).json({
         success: true,
         message: result.message,
@@ -47,13 +58,16 @@ class CustomerController {
     } catch (error) {
       return res.status(400).json({
         success: false,
-        messasge: error.message,
+        message: error.message,
       });
     }
   }
+
+  // Send an OTP for password reset.
   async forgotPassword(req, res) {
     try {
       const result = await customerService.forgotPassword(req.body.email);
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -62,6 +76,8 @@ class CustomerController {
       });
     }
   }
+
+  // Reset the customer's password.
   async resetPassword(req, res) {
     try {
       const result = await customerService.resetPassword(
@@ -69,6 +85,7 @@ class CustomerController {
         req.body.otp,
         req.body.newPassword,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -77,9 +94,12 @@ class CustomerController {
       });
     }
   }
+
+  // Get the logged-in customer's profile.
   async getCustomerProfile(req, res) {
     try {
       const result = await customerService.getCustomerProfile(req.customerId);
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -88,12 +108,15 @@ class CustomerController {
       });
     }
   }
+
+  // Update the logged-in customer's profile.
   async updateCustomerProfile(req, res) {
     try {
       const result = await customerService.updateCustomerProfile(
         req.customerId,
         req.body,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -102,6 +125,8 @@ class CustomerController {
       });
     }
   }
+
+  // Log out the customer by clearing the authentication cookie.
   async logout(req, res) {
     cookieHelper.clearAuthCookie(res);
 
@@ -111,4 +136,5 @@ class CustomerController {
     });
   }
 }
+
 module.exports = new CustomerController();

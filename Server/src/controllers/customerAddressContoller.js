@@ -1,12 +1,15 @@
 const customerAddressService = require("../Services/customerAddressService");
 
-class customerAddressController {
+class CustomerAddressController {
+  // Author: Nishtha
+  // Create a new customer address.
   async createAddress(req, res) {
     try {
       const result = await customerAddressService.createAddress(
         req.user.customerId,
         req.body,
       );
+
       return res.status(201).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -15,11 +18,14 @@ class customerAddressController {
       });
     }
   }
+
+  // Get all addresses of the logged-in customer.
   async getAddresses(req, res) {
     try {
       const result = await customerAddressService.getAddresses(
         req.user.customerId,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -28,12 +34,15 @@ class customerAddressController {
       });
     }
   }
+
+  // Get a specific customer address.
   async getAddress(req, res) {
     try {
       const result = await customerAddressService.getAddress(
         req.params.id,
         req.user.customerId,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -42,6 +51,8 @@ class customerAddressController {
       });
     }
   }
+
+  // Update an existing customer address.
   async updateAddress(req, res) {
     try {
       const result = await customerAddressService.updateAddress(
@@ -49,6 +60,7 @@ class customerAddressController {
         req.user.customerId,
         req.body,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -57,12 +69,15 @@ class customerAddressController {
       });
     }
   }
+
+  // Delete a customer address.
   async deleteAddress(req, res) {
     try {
       const result = await customerAddressService.deleteAddress(
         req.params.id,
         req.user.customerId,
       );
+
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({
@@ -72,4 +87,5 @@ class customerAddressController {
     }
   }
 }
-module.exports = new customerAddressController();
+
+module.exports = new CustomerAddressController();
