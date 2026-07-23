@@ -1,10 +1,15 @@
+/**
+ * Author : Nishtha
+ *
+ * Customer Product Routes
+ * Handles product browsing, searching,
+ * category filtering, and product details.
+ */
+
 const express = require("express");
 const router = express.Router();
 
 const customerProductController = require("../controllers/customerProductController");
-
-
-// Author: Nishtha
 
 // Get all available products.
 router.get("/", customerProductController.getAllProducts);
@@ -14,8 +19,8 @@ router.get("/search", customerProductController.searchProducts);
 
 // Get products belonging to a specific category.
 router.get(
-  "/category/:categoryId",
-  customerProductController.getProductsByCategory,
+    "/category/:categoryId",
+    customerProductController.getProductsByCategory,
 );
 
 // Get details of a specific product.

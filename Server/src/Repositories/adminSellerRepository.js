@@ -1,6 +1,15 @@
-class AdminSellerRepository{
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Database queries for fetching sellers and updating
+ * seller account status.
+ */
 
-    async getAllSellers(connection){
+class AdminSellerRepository {
+
+    // Get All Sellers.
+    async getAllSellers(connection) {
         const query = `
         SELECT 
             id,
@@ -18,7 +27,8 @@ class AdminSellerRepository{
         return rows;
     }
 
-    async getSellerById(connection,sellerId){
+    // Get Seller By Id.
+    async getSellerById(connection, sellerId) {
         const query = `
         SELECT 
             id,
@@ -31,23 +41,25 @@ class AdminSellerRepository{
         FROM sellers
         WHERE id = ?`;
 
-        const [rows] = await connection.query(query,[sellerId]);
+        const [rows] = await connection.query(query, [sellerId]);
 
         return rows[0];
     }
 
-    async updateSellerStatus(connection,sellerId,status){
+    // Update Seller Status.
+    async updateSellerStatus(connection, sellerId, status) {
         const query = `
         UPDATE sellers
         SET account_status = ?
         WHERE id = ?`;
 
-        const [result] = await connection.query(query,[status,sellerId]);
+        const [result] = await connection.query(query, [status, sellerId]);
 
         return result;
     }
 
-    async checkSellerExists(connection,sellerId){
+    // Check Seller Exists.
+    async checkSellerExists(connection, sellerId) {
         const query = `
         SELECT 
             id,
@@ -55,7 +67,7 @@ class AdminSellerRepository{
         FROM sellers 
         WHERE id = ?`;
 
-        const [rows] = await connection.query(query,[sellerId]);
+        const [rows] = await connection.query(query, [sellerId]);
 
         return rows[0];
 

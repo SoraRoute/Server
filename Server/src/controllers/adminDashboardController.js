@@ -1,6 +1,15 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Exposes the admin dashboard summary statistics endpoint.
+ */
+
 const AdminDashboardService = require("../Services/adminDashboardService");
 
 class AdminDashboardController{
+
+    // Get Dashboard Statistics.
     async getDashboardStatistics(req,res){
         try{
             const summary = await AdminDashboardService.getDashboardStatistics();

@@ -4,7 +4,7 @@ const { GoogleGenAI } = require("@google/genai");
 
 // Initialize the Gemini AI client.
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+    apiKey: process.env.GEMINI_API_KEY,
 });
 
 module.exports = ai;

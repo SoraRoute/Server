@@ -1,3 +1,11 @@
+/**
+ * Author : Pinki
+ *
+ * Seller Authentication & Management Routes
+ * Handles seller authentication, profile management,
+ * password operations, orders, revenue, and logout.
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -11,26 +19,31 @@ const validateSellerProfile = require("../middleware/validationSellerProfile")
 
 const validateChangePassword = require("../middleware/validationChangePassword")
 
+// Send OTP for seller registration
 router.post(
     "/send-otp",
     sellerController.sendSellerOtp
 );
 
+// Verify seller OTP
 router.post(
     "/verify-otp",
     sellerController.verifySellerOtp
 );
 
+// Register a new seller
 router.post(
     "/register",
     sellerController.registerSeller
 );
 
+// Seller login
 router.post(
     "/login",
     sellerController.loginSeller
 );
 
+// Get seller profile
 router.get(
     "/profile",
     authMiddleware,
@@ -38,16 +51,19 @@ router.get(
     sellerController.getSellerProfile
 );
 
+// Send OTP for password reset
 router.post(
     "/forgot-password",
     sellerController.forgotPassword
 );
 
+// Reset seller password
 router.post(
     "/reset-password",
     sellerController.resetPassword
 );
 
+// Update seller profile
 router.patch(
     "/update-profile",
     authMiddleware,
@@ -56,6 +72,7 @@ router.patch(
     sellerController.updateSellerProfile
 );
 
+// Change seller password
 router.patch(
     "/change-password",
     authMiddleware,
@@ -88,8 +105,10 @@ router.patch(
     roleMiddleware("seller"),
     sellerController.updateOrderStatus
 );
-
-//add this logout route
-router.post("/logout", authMiddleware, sellerController.logout);
+// Logout seller
+router.post("/logout", 
+    authMiddleware, 
+    sellerController.logout
+);
 
 module.exports = router;

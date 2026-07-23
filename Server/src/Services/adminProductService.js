@@ -1,57 +1,69 @@
+/**
+ * Admin Module
+ * 
+ * Author : Pinki
+ * Business logic for viewing, approving, and removing
+ * products from the admin panel.
+ */
+
 const db = require("../Config/dbConnection");
 const AdminProductRepository = require("../Repositories/adminProductRepository");
 
-class AdminProductService{
-    async getAllProducts(){
+class AdminProductService {
+
+    // Get All Products.
+    async getAllProducts() {
         const connection = await db.getConnection();
 
-        try{
+        try {
             const result = await AdminProductRepository.getAllProducts(connection);
 
-            return{
+            return {
                 success: true,
                 data: result,
                 message: "Products fetched successfully."
             }
 
-        }catch(error){
+        } catch (error) {
             throw error;
 
-        }finally{
+        } finally {
             connection.release();
         }
     }
 
-    async getProductById(productId){
+    // Get Product By Id.
+    async getProductById(productId) {
         const connection = await db.getConnection();
 
-        try{
-            
-            const product = await AdminProductRepository.getProductById(connection,productId);
+        try {
 
-            if(!product){
+            const product = await AdminProductRepository.getProductById(connection, productId);
+
+            if (!product) {
                 throw new Error("Product Not Found.");
             }
 
-            return{
+            return {
                 success: true,
                 data: product,
                 message: "Product fetched successfully."
             }
 
-        }catch(error){
+        } catch (error) {
             throw error;
 
-        }finally{
+        } finally {
             connection.release();
         }
     }
 
-    async updateProductStatus(productId,status){
+    // Update Product Status.
+    async updateProductStatus(productId, status) {
 
         const connection = await db.getConnection();
 
-        try{
+        try {
 
             const allowedStatus = [
                 "ACTIVE",
@@ -62,61 +74,62 @@ class AdminProductService{
                 throw new Error("Invalid product status.");
             }
 
-            const existingProduct = await AdminProductRepository.getProductById(connection,productId);
+            const existingProduct = await AdminProductRepository.getProductById(connection, productId);
 
-            if(!existingProduct){
+            if (!existingProduct) {
                 throw new Error("Product Not Found.");
             }
 
-            const updatedProduct = await AdminProductRepository.updateStatus(connection,productId,status);
+            const updatedProduct = await AdminProductRepository.updateStatus(connection, productId, status);
 
-            if(updatedProduct.affectedRows === 0){
+            if (updatedProduct.affectedRows === 0) {
                 throw new Error("Failed to update product status.");
             }
 
             await connection.commit();
 
-            return{
+            return {
                 success: true,
                 message: "Status updated successfully."
             }
 
-        }catch(error){
+        } catch (error) {
             throw error;
 
-        }finally{
+        } finally {
             connection.release();
         }
     }
 
-    async deleteProductById(productId){
-         const connection = await db.getConnection();
+    // Delete Product By Id.
+    async deleteProductById(productId) {
+        const connection = await db.getConnection();
 
-        try{
+        try {
             await connection.beginTransaction();
 
-            const existingProduct = await AdminProductRepository.getProductById(connection,productId);
+            const existingProduct = await AdminProductRepository.getProductById(connection, productId);
 
-            if(!existingProduct){
+            if (!existingProduct) {
                 throw new Error("Product Not Found.");
             }
 
-            await AdminProductRepository.deleteProduct(connection,productId);
+            await AdminProductRepository.deleteProduct(connection, productId);
 
-            await AdminProductRepository.deleteProductImages(connection,productId);
+            await AdminProductRepository.deleteProductImages(connection, productId);
 
             await connection.commit();
 
-            return{
+            return {
                 success: true,
                 message: "Product Deleted successfully."
             }
 
-        }catch(error){
+        } catch (error) {
             await connection.rollback();
             throw error;
 
-        }finally{
+        } finally {
             connection.release();
         }
     }

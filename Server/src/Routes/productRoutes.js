@@ -1,3 +1,11 @@
+/**
+ * Author : Pinki
+ *
+ * Seller Product Routes
+ * Handles seller product management including
+ * adding, viewing, updating, deleting, and changing product status.
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -11,39 +19,45 @@ const upload = require("../middleware/uploadMiddleware");
 
 const validationMiddleware = require("../middleware/validationMiddleware");
 
-const{
+const {
     addProductValidation
 } = require("../middleware/productValidation");
 
-router.post("/add",authMiddleware,
+// Add a new product
+router.post("/add", authMiddleware,
     roleMiddleware("seller"),
-    upload.array("images",5),
+    upload.array("images", 5),
     addProductValidation,
     validationMiddleware,
     productController.addProduct
 );
 
-router.get("/my-products",authMiddleware,
+// Get all products of the logged-in seller
+router.get("/my-products", authMiddleware,
     roleMiddleware("seller"),
     productController.getSellerProducts
 );
 
-router.get("/:id",authMiddleware,
+// Get product details by ID
+router.get("/:id", authMiddleware,
     roleMiddleware("seller"),
     productController.getProductById
 );
 
-router.put("/:id",authMiddleware,
+// Update product details
+router.put("/:id", authMiddleware,
     roleMiddleware("seller"),
     productController.updateProduct
 );
 
-router.delete("/:id",authMiddleware,
+// Delete a product
+router.delete("/:id", authMiddleware,
     roleMiddleware("seller"),
     productController.deleteProduct
 );
 
-router.patch("/:id/status",authMiddleware,
+// Update product status
+router.patch("/:id/status", authMiddleware,
     roleMiddleware("seller"),
     productController.updateStatus
 )

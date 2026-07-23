@@ -1,10 +1,16 @@
+/**
+ * Author : Nishtha
+ *
+ * Customer Address Routes
+ * Handles customer address management including
+ * creating, viewing, updating, and deleting addresses.
+ */
+
 const express = require("express");
 const router = express.Router();
 
 const customerAddressController = require("../controllers/customerAddressContoller");
 const authenticateCustomer = require("../middleware/authMiddleware");
-
-// Author: Nishtha
 
 // Create a new address.
 router.post("/", authenticateCustomer, customerAddressController.createAddress);
@@ -17,16 +23,16 @@ router.get("/:id", authenticateCustomer, customerAddressController.getAddress);
 
 // Update an existing address.
 router.patch(
-  "/:id",
-  authenticateCustomer,
-  customerAddressController.updateAddress,
+    "/:id",
+    authenticateCustomer,
+    customerAddressController.updateAddress,
 );
 
 // Delete an address.
 router.delete(
-  "/:id",
-  authenticateCustomer,
-  customerAddressController.deleteAddress,
+    "/:id",
+    authenticateCustomer,
+    customerAddressController.deleteAddress,
 );
 
 module.exports = router;

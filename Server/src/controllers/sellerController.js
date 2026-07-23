@@ -1,163 +1,186 @@
+/**
+ * Author : Pinki
+ * 
+ * Seller Module
+ * Handles seller account operations including registration, OTP verification,
+ * authentication, profile management, password management, order management,
+ * revenue tracking, and logout.
+ */
+
 const sellerService = require("../Services/sellerService");
 const constants = require("../Constants/OTPPurpose");
-const cookieHelper = require("../Utils/cookieHelper"); //added this cookie helper import
+const cookieHelper = require("../Utils/cookieHelper");
 
 class SellerController {
-  async sendSellerOtp(req, res) {
-    try {
-      //change for cookie only this try block
-      const { email } = req.body;
-      const result = await sellerService.sendSellerOtp(
-        email,
-        constants.REGISTER,
-      );
 
-      return res.status(200).json({
-        success: true,
-        message: result.message,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+    // Sends an OTP to the seller's email for account registration.
+    async sendSellerOtp(req, res) {
+        try {
+            const { email } = req.body;
+
+            const result = await sellerService.sendSellerOtp(
+                email,
+                constants.REGISTER,
+            );
+
+            return res.status(200).json({
+                success: true,
+                message: result.message,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
-  async verifySellerOtp(req, res) {
-    try {
-      const { email, otp } = req.body;
+    // Verifies the registration OTP submitted by the seller.
+    async verifySellerOtp(req, res) {
+        try {
+            const { email, otp } = req.body;
 
-      const result = await sellerService.verifySellerOtp(
-        email,
-        otp,
-        constants.REGISTER,
-      );
+            const result = await sellerService.verifySellerOtp(
+                email,
+                otp,
+                constants.REGISTER,
+            );
 
-      return res.status(200).json({
-        success: true,
-        message: result.message,
-        verificationToken: result.verificationToken,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+            return res.status(200).json({
+                success: true,
+                message: result.message,
+                verificationToken: result.verificationToken,
+            });
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
-  async registerSeller(req, res) {
-    try {
-      const sellerData = req.body;
-      const authHeader = req.headers.authorization;
+    // Registers a new seller after successful OTP verification.
+    async registerSeller(req, res) {
+        try {
+            const sellerData = req.body;
+            const authHeader = req.headers.authorization;
 
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw new Error("Verification token is required.");
-      }
+            if (!authHeader || !authHeader.startsWith("Bearer ")) {
+                throw new Error("Verification token is required.");
+            }
 
-      const verificationToken = authHeader.split(" ")[1];
+            const verificationToken = authHeader.split(" ")[1];
 
-      const result = await sellerService.registerSeller(
-        sellerData,
-        verificationToken,
-      );
+            const result = await sellerService.registerSeller(
+                sellerData,
+                verificationToken,
+            );
 
-      return res.status(201).json({
-        success: true,
-        message: result.message,
-        sellerId: result.sellerId,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+            return res.status(201).json({
+                success: true,
+                message: result.message,
+                sellerId: result.sellerId,
+            });
+
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
-  async loginSeller(req, res) {
-    try {
-      const result = await sellerService.loginSeller(req.body);
+    // Authenticates the seller and stores the JWT in an HttpOnly cookie.
+    async loginSeller(req, res) {
+        try {
+            const result = await sellerService.loginSeller(req.body);
 
-      cookieHelper.setAuthCookie(res, result.token);
+            cookieHelper.setAuthCookie(res, result.token);
 
-      return res.status(200).json({
-        message: result.message,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+            return res.status(200).json({
+                message: result.message,
+            });
+
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
-  async forgotPassword(req, res) {
-    try {
-      const { email } = req.body;
+    // Sends an OTP to the seller's email for password reset.
+    async forgotPassword(req, res) {
+        try {
+            const { email } = req.body;
 
-      const result = await sellerService.sendSellerOtp(
-        email,
-        constants.RESET_PASSWORD,
-      );
+            const result = await sellerService.sendSellerOtp(
+                email,
+                constants.RESET_PASSWORD,
+            );
 
-      return res.status(200).json({
-        sucess: true,
-        message: result.message,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+            return res.status(200).json({
+                sucess: true,
+                message: result.message,
+            });
+
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
-  async resetPassword(req, res) {
-    try {
-      const { email, otp, newPassword } = req.body;
+    // Resets the seller's password after successful OTP verification.
+    async resetPassword(req, res) {
+        try {
+            const { email, otp, newPassword } = req.body;
 
-      const result = await sellerService.resetPassword(email, otp, newPassword);
+            const result = await sellerService.resetPassword(email, otp, newPassword);
 
-      return res.status(200).json({
-        success: true,
-        message: result.message,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        sucess: false,
-        message: error.message,
-      });
+            return res.status(200).json({
+                success: true,
+                message: result.message,
+            });
+
+        } catch (error) {
+            return res.status(400).json({
+                sucess: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
-  async getSellerProfile(req, res) {
-    try {
-      const sellerId = req.user.sellerId;
-      const result = await sellerService.getSellerProfile(sellerId);
+    // Retrieves the authenticated seller's profile.
+    async getSellerProfile(req, res) {
+        try {
+            const sellerId = req.user.sellerId;
+            const result = await sellerService.getSellerProfile(sellerId);
 
-      return res.status(200).json({
-        success: true,
-        message: "Seller Profile Fetched Successfully.",
-        sellerData: result,
-      });
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+            return res.status(200).json({
+                success: true,
+                message: "Seller Profile Fetched Successfully.",
+                sellerData: result,
+            });
+
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
-  async updateSellerProfile(req, res) {
+    // Updates the authenticated seller's profile information.
+    async updateSellerProfile(req, res) {
         try {
             const sellerId = req.user.sellerId;
             const sellerData = req.body;
 
             const result = await sellerService.updateSellerProfile(
                 sellerId,
-                sellerData
+                sellerData,
             );
 
             return res.status(200).json(result);
@@ -165,12 +188,12 @@ class SellerController {
         } catch (error) {
             return res.status(400).json({
                 success: false,
-                message: error.message
+                message: error.message,
             });
         }
     }
 
-
+    // Changes the authenticated seller's account password.
     async changePassword(req, res) {
         try {
             const sellerId = req.user.sellerId;
@@ -178,7 +201,7 @@ class SellerController {
 
             const result = await sellerService.changePassword(
                 sellerId,
-                passwordData
+                passwordData,
             );
 
             return res.status(200).json(result);
@@ -186,75 +209,77 @@ class SellerController {
         } catch (error) {
             return res.status(400).json({
                 success: false,
-                message: error.message
+                message: error.message,
             });
         }
     }
 
-  //add this logout
-  async logout(req, res) {
-    cookieHelper.clearAuthCookie(res);
+    // Logs out the seller by clearing the authentication cookie.
+    async logout(req, res) {
+        cookieHelper.clearAuthCookie(res);
 
-    return res.status(200).json({
-      success: true,
-      message: "Logged out successfully.",
-    });
-  }
-
-  async getSellerOrders(req, res) {
-    try {
-        const sellerId = req.user.sellerId;
-
-        const result = await sellerService.getSellerOrders(sellerId);
-
-        return res.status(200).json(result);
-
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully.",
         });
     }
-}
 
-async getSellerRevenue(req, res) {
-    try {
-        const sellerId = req.user.sellerId;
+    // Retrieves all orders associated with the authenticated seller.
+    async getSellerOrders(req, res) {
+        try {
+            const sellerId = req.user.sellerId;
 
-        const result = await sellerService.getSellerRevenue(sellerId);
+            const result = await sellerService.getSellerOrders(sellerId);
 
-        return res.status(200).json(result);
+            return res.status(200).json(result);
 
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        });
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-}
 
-async updateOrderStatus(req, res) {
-    try {
-        const sellerId = req.user.sellerId;
-        const { orderId } = req.params;
-        const { order_status } = req.body;
+    //Retrieves the revenue summary for the authenticated seller.
+    async getSellerRevenue(req, res) {
+        try {
+            const sellerId = req.user.sellerId;
 
-        const result = await sellerService.updateOrderStatus(
-            orderId,
-            sellerId,
-            order_status
-        );
+            const result = await sellerService.getSellerRevenue(sellerId);
 
-        return res.status(200).json(result);
+            return res.status(200).json(result);
 
-    } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        });
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
-  }
 
+    // Updates the status of a seller's order.
+    async updateOrderStatus(req, res) {
+        try {
+            const sellerId = req.user.sellerId;
+            const { orderId } = req.params;
+            const { order_status } = req.body;
+
+            const result = await sellerService.updateOrderStatus(
+                orderId,
+                sellerId,
+                order_status,
+            );
+
+            return res.status(200).json(result);
+
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    }
 }
 
 module.exports = new SellerController();

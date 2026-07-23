@@ -1,18 +1,27 @@
+/**
+ * Author : Pinki
+ *
+ * Admin Seller Routes
+ * Handles seller management operations such as
+ * viewing sellers and updating seller status.
+ */
+
 const express = require("express");
 
 const router = express.Router();
 
 const adminSellerController =
-require("../Controllers/adminSellerController");
+    require("../Controllers/adminSellerController");
 
 
 const authMiddleware =
-require("../Middleware/authMiddleware");
+    require("../Middleware/authMiddleware");
 
-const roleMiddleware = 
-require("../Middleware/roleMiddleware");
+const roleMiddleware =
+    require("../Middleware/roleMiddleware");
 
 
+// Get all sellers
 router.get(
     "/",
     authMiddleware,
@@ -20,6 +29,7 @@ router.get(
     adminSellerController.getAllSellers
 );
 
+// Get seller by ID
 router.get(
     "/:id",
     authMiddleware,
@@ -27,6 +37,8 @@ router.get(
     adminSellerController.getSellerById
 );
 
+
+// Update seller status
 router.patch(
     "/:id/status",
     authMiddleware,

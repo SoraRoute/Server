@@ -1,8 +1,19 @@
+/**
+ * Author : Pinki
+ * 
+ * Seller Module
+ * Handles database operations related to products,
+ * including product management, product images,
+ * inventory, and seller product records.
+ */
+
 const db = require("../Config/dbConnection");
 
-class ProductRepository{
+class ProductRepository {
 
-    async createProduct(connection,productData){
+    // Create A Product.
+    async createProduct(connection, productData) {
+
         const query = `
         Insert Into products(
             seller_id,
@@ -27,12 +38,14 @@ class ProductRepository{
             productData.status || "ACTIVE"
         ]
 
-        const [result] = await connection.query(query,values);
+        const [result] = await connection.query(query, values);
 
         return result.insertId;
     }
 
-    async addProductImages(connection,productId,images){
+    // Add Product Images
+    async addProductImages(connection, productId, images) {
+
         const query = `
         Insert Into product_images(
             product_id,
@@ -41,8 +54,8 @@ class ProductRepository{
         )
         Values (?,?,?)`;
 
-        for(const image of images){
-            await connection.query(query,[
+        for (const image of images) {
+            await connection.query(query, [
                 productId,
                 image.image_url,
                 image.public_id
@@ -51,7 +64,9 @@ class ProductRepository{
 
     }
 
-    async getSellerProducts(connection,sellerId){
+    // Get Seller Products
+    async getSellerProducts(connection, sellerId) {
+
         const query = `Select
             id,
             category_id,
@@ -66,21 +81,26 @@ class ProductRepository{
         Order by created_at Desc
         `;
 
-        const [rows] = await connection.query(query,[sellerId]);
+        const [rows] = await connection.query(query, [sellerId]);
 
         return rows;
     }
 
-    async getProductById(connection,productId,sellerId){
+    // Get Product By its ID.
+    async getProductById(connection, productId, sellerId) {
+
         const query = `Select * from products where id = ? and seller_id = ?
         `;
 
-        const [rows] = await connection.query(query,[productId,sellerId]);
+        const [rows] = await connection.query(query, [productId, sellerId]);
 
         return rows[0];
     }
 
-    async getProductImages(connection,productId){
+
+    // Get Product Images.
+    async getProductImages(connection, productId) {
+
         const query = `Select
             id,
             image_url,
@@ -89,13 +109,15 @@ class ProductRepository{
         where product_id = ? 
         `;
 
-        const [images] = await connection.query(query,[productId]);
+        const [images] = await connection.query(query, [productId]);
 
         return images;
     }
 
-    async updateProduct(connection,productId,sellerId,productData){
-        const query =  `Update products Set
+    // Update Product Information
+    async updateProduct(connection, productId, sellerId, productData) {
+
+        const query = `Update products Set
             category_id = ?,
             title = ?,
             description = ?,
@@ -120,33 +142,41 @@ class ProductRepository{
             sellerId
         ];
 
-        const [result] = await connection.query(query,values);
+        const [result] = await connection.query(query, values);
 
         return result;
     }
 
-    async deleteProduct(connection,productId,sellerId){
+    // Delete A product by Product ID and Seller ID.
+    async deleteProduct(connection, productId, sellerId) {
+
         const query = `Delete From products where id = ? and seller_id = ?`;
 
-        const [result] = await connection.query(query,[productId,sellerId]);
+        const [result] = await connection.query(query, [productId, sellerId]);
 
         return result;
     }
 
-    async deleteProductImages(connection,productId){
+    // Delete Product Images.
+    async deleteProductImages(connection, productId) {
+
         const query = 'Delete from product_images where product_id = ?';
 
-        await connection.query(query,[productId]);
+        await connection.query(query, [productId]);
     }
 
-    async updateStatus(connection,productId,sellerId,status){
+
+    // Update Product Status.
+    async updateStatus(connection, productId, sellerId, status) {
+
         const query = `Update products Set status = ? where id = ? and seller_id = ?`;
 
-        await connection.query(query,[status,productId,sellerId]);
+        await connection.query(query, [status, productId, sellerId]);
     }
-    
-    //added finding product method through product id only(Nishtha)
+
+    // Find product method through product id only(Nishtha).
     async findProductById(productId) {
+
         const sql = `
             SELECT *
             FROM products
@@ -159,10 +189,12 @@ class ProductRepository{
         return rows[0];
     }
 
-    async countProductsByCategoryId(connection,categoryId){
+    // Count Products by Category.
+    async countProductsByCategoryId(connection, categoryId) {
+
         const query = `Select Count(*) As total from products where category_id = ?`;
 
-        const [result] = await connection.query(query,[categoryId]);
+        const [result] = await connection.query(query, [categoryId]);
 
         return result[0].total;
     }

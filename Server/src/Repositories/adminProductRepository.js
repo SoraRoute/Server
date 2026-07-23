@@ -1,5 +1,15 @@
-class AdminProductRepository{
-    async getAllProducts(connection){
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Database queries for fetching, approving, and removing
+ * products from the admin panel.
+ */
+
+class AdminProductRepository {
+
+    // Get All Products.
+    async getAllProducts(connection) {
         const query = `Select
             id,
             category_id,
@@ -19,49 +29,53 @@ class AdminProductRepository{
         return rows;
     }
 
-    async getProductById(connection,productId){
+    // Get Product By Id.
+    async getProductById(connection, productId) {
         const query = `
         SELECT * FROM
         products 
         WHERE id = ?
         `;
 
-        const [rows] = await connection.query(query,[productId]);
+        const [rows] = await connection.query(query, [productId]);
 
         return rows[0];
 
     }
 
-    async updateStatus(connection,productId,status){
+    // Update Status.
+    async updateStatus(connection, productId, status) {
         const query = `
         UPDATE products 
         SET status = ? 
         WHERE id = ?`;
 
-        const [result] = await connection.query(query,[status,productId]);
+        const [result] = await connection.query(query, [status, productId]);
 
         return result;
 
     }
 
-    async deleteProduct(connection,productId){
+    // Delete Product
+    async deleteProduct(connection, productId) {
         const query = `
         DELETE FROM
         products 
         WHERE id = ?`;
 
-        const [result] = await connection.query(query,[productId]);
+        const [result] = await connection.query(query, [productId]);
 
         return result;
     }
 
-    async deleteProductImages(connection,productId){
+    // Delete Product Images.
+    async deleteProductImages(connection, productId) {
         const query = `
         DELETE FROM
         product_images 
         WHERE product_id = ?`;
 
-        await connection.query(query,[productId]);
+        await connection.query(query, [productId]);
     }
 
 }

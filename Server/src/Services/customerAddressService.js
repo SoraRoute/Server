@@ -1,132 +1,140 @@
+/**
+ * Author : Nishtha
+ *
+ * Customer Address Service
+ * Handles business logic for creating, retrieving,
+ * updating, and deleting customer addresses.
+ */
+
 const customerAddressRepository = require("../Repositories/customerAddressRepository");
 const customerRepository = require("../Repositories/customerRepository");
 
 class CustomerAddressService {
-  // Author: Nishtha
-  // Create a new address for the customer.
-  async createAddress(customerId, customerAddressData) {
-    const customer = await customerRepository.findCustomerById(customerId);
 
-    if (!customer) {
-      throw new Error("Customer not found");
+    // Create a new address for the customer.
+    async createAddress(customerId, customerAddressData) {
+        const customer = await customerRepository.findCustomerById(customerId);
+
+        if (!customer) {
+            throw new Error("Customer not found");
+        }
+
+        customerAddressData.customer_id = customerId;
+
+        const addressId =
+            await customerAddressRepository.createAddress(customerAddressData);
+
+        return {
+            success: true,
+            message: "Address created successfully",
+            addressId,
+        };
     }
 
-    customerAddressData.customer_id = customerId;
+    // Get all addresses saved by the customer.
+    async getAddresses(customerId) {
+        const customer = await customerRepository.findCustomerById(customerId);
 
-    const addressId =
-      await customerAddressRepository.createAddress(customerAddressData);
+        if (!customer) {
+            throw new Error("Customer not found");
+        }
 
-    return {
-      success: true,
-      message: "Address created successfully",
-      addressId,
-    };
-  }
+        const addresses =
+            await customerAddressRepository.getAddressesByCustomerId(customerId);
 
-  // Get all addresses saved by the customer.
-  async getAddresses(customerId) {
-    const customer = await customerRepository.findCustomerById(customerId);
-
-    if (!customer) {
-      throw new Error("Customer not found");
+        return {
+            success: true,
+            addresses,
+        };
     }
 
-    const addresses =
-      await customerAddressRepository.getAddressesByCustomerId(customerId);
+    // Get a specific address after verifying ownership.
+    async getAddress(addressId, customerId) {
+        const customer = await customerRepository.findCustomerById(customerId);
 
-    return {
-      success: true,
-      addresses,
-    };
-  }
+        if (!customer) {
+            throw new Error("Customer not found");
+        }
 
-  // Get a specific address after verifying ownership.
-  async getAddress(addressId, customerId) {
-    const customer = await customerRepository.findCustomerById(customerId);
+        const address = await customerAddressRepository.getAddressById(addressId);
 
-    if (!customer) {
-      throw new Error("Customer not found");
+        if (!address) {
+            throw new Error("Address not found");
+        }
+
+        if (address.customer_id !== customerId) {
+            throw new Error("Unauthorized access");
+        }
+
+        return {
+            success: true,
+            address,
+        };
     }
 
-    const address = await customerAddressRepository.getAddressById(addressId);
+    // Update an existing customer address.
+    async updateAddress(addressId, customerId, customerAddressData) {
+        const customer = await customerRepository.findCustomerById(customerId);
 
-    if (!address) {
-      throw new Error("Address not found");
+        if (!customer) {
+            throw new Error("Customer not found");
+        }
+
+        const address = await customerAddressRepository.getAddressById(addressId);
+
+        if (!address) {
+            throw new Error("Address not found");
+        }
+
+        if (address.customer_id !== customerId) {
+            throw new Error("Unauthorized access");
+        }
+
+        const rowsUpdated = await customerAddressRepository.updateAddress(
+            addressId,
+            customerAddressData,
+        );
+
+        if (rowsUpdated === 0) {
+            throw new Error("Profile update failed");
+        }
+
+        return {
+            success: true,
+            message: "Address updated successfully",
+        };
     }
 
-    if (address.customer_id !== customerId) {
-      throw new Error("Unauthorized access");
+    // Delete a customer address after verification.
+    async deleteAddress(addressId, customerId) {
+        const customer = await customerRepository.findCustomerById(customerId);
+
+        if (!customer) {
+            throw new Error("Customer not found");
+        }
+
+        const address = await customerAddressRepository.getAddressById(addressId);
+
+        if (!address) {
+            throw new Error("Address not found");
+        }
+
+        if (address.customer_id !== customerId) {
+            throw new Error("Unauthorized access");
+        }
+
+        const rowsDeleted =
+            await customerAddressRepository.deleteAddress(addressId);
+
+        if (rowsDeleted === 0) {
+            throw new Error("Address deletion failed");
+        }
+
+        return {
+            success: true,
+            message: "Address deleted successfully",
+        };
     }
-
-    return {
-      success: true,
-      address,
-    };
-  }
-
-  // Update an existing customer address.
-  async updateAddress(addressId, customerId, customerAddressData) {
-    const customer = await customerRepository.findCustomerById(customerId);
-
-    if (!customer) {
-      throw new Error("Customer not found");
-    }
-
-    const address = await customerAddressRepository.getAddressById(addressId);
-
-    if (!address) {
-      throw new Error("Address not found");
-    }
-
-    if (address.customer_id !== customerId) {
-      throw new Error("Unauthorized access");
-    }
-
-    const rowsUpdated = await customerAddressRepository.updateAddress(
-      addressId,
-      customerAddressData,
-    );
-
-    if (rowsUpdated === 0) {
-      throw new Error("Profile update failed");
-    }
-
-    return {
-      success: true,
-      message: "Address updated successfully",
-    };
-  }
-
-  // Delete a customer address after verification.
-  async deleteAddress(addressId, customerId) {
-    const customer = await customerRepository.findCustomerById(customerId);
-
-    if (!customer) {
-      throw new Error("Customer not found");
-    }
-
-    const address = await customerAddressRepository.getAddressById(addressId);
-
-    if (!address) {
-      throw new Error("Address not found");
-    }
-
-    if (address.customer_id !== customerId) {
-      throw new Error("Unauthorized access");
-    }
-
-    const rowsDeleted =
-      await customerAddressRepository.deleteAddress(addressId);
-
-    if (rowsDeleted === 0) {
-      throw new Error("Address deletion failed");
-    }
-
-    return {
-      success: true,
-      message: "Address deleted successfully",
-    };
-  }
 }
 
 module.exports = new CustomerAddressService();

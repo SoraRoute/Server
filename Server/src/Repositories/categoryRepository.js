@@ -1,6 +1,15 @@
-class CategoryRepository{
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Database queries for creating, fetching, updating,
+ * deleting, and changing the status of categories.
+ */
 
-    async addCategory(connection,categoryData){
+class CategoryRepository {
+
+    // Add Category.
+    async addCategory(connection, categoryData) {
         const query = `Insert into categories (
             name,
             description,
@@ -15,13 +24,14 @@ class CategoryRepository{
             categoryData.status || "ACTIVE"
         ]
 
-        const [result] = await connection.query(query,values);
+        const [result] = await connection.query(query, values);
 
         return result.insertId;
 
     }
 
-    async getAllCategoriesForCustomer(connection){
+    // Get All Categories For Customer.
+    async getAllCategoriesForCustomer(connection) {
         const query = `Select 
             id,
             name,
@@ -38,7 +48,8 @@ class CategoryRepository{
         return result;
     }
 
-    async getAllCategoriesForAdmin(connection){
+    // Get All Categories For Admin.
+    async getAllCategoriesForAdmin(connection) {
         const query = `Select 
             id,
             name,
@@ -52,7 +63,8 @@ class CategoryRepository{
         return result;
     }
 
-    async getCategoryById(connection,categoryId){
+    // Get Category By Id.
+    async getCategoryById(connection, categoryId) {
         const query = `Select 
             id,
             name,
@@ -61,21 +73,23 @@ class CategoryRepository{
             status
         from categories where id = ?`;
 
-        const [result] = await connection.query(query,[categoryId]);
+        const [result] = await connection.query(query, [categoryId]);
 
         return result[0];
     }
 
-    async findCategoryByName(connection,categoryName){
+    // Find Category By Name.
+    async findCategoryByName(connection, categoryName) {
 
         const query = `Select * from categories where name = ?`;
 
-        const [rows] = await connection.query(query,[categoryName]);
+        const [rows] = await connection.query(query, [categoryName]);
 
         return rows[0];
     }
 
-    async findCategoryByNameExceptId(connection, categoryName, categoryId){
+    // Find Category By Name Except Id.
+    async findCategoryByNameExceptId(connection, categoryName, categoryId) {
 
         const query = `
             SELECT * 
@@ -84,7 +98,7 @@ class CategoryRepository{
             AND id != ?
         `;
 
-        const [rows] = await connection.query(query,[
+        const [rows] = await connection.query(query, [
             categoryName,
             categoryId
         ]);
@@ -92,7 +106,8 @@ class CategoryRepository{
         return rows[0];
     }
 
-    async updateCategory(connection,categoryData){
+    // Update Category.
+    async updateCategory(connection, categoryData) {
         const query = `
         Update categories Set 
             name = ?,
@@ -109,23 +124,25 @@ class CategoryRepository{
             categoryData.id
         ]
 
-        const [result] = await connection.query(query,values);
+        const [result] = await connection.query(query, values);
 
         return result.affectedRows;
     }
 
-    async deleteCategory(connection,categoryId){
+    // Delete Category.
+    async deleteCategory(connection, categoryId) {
         const query = `Delete from categories where id = ?`;
 
-        const [result] = await connection.query(query,[categoryId]);
+        const [result] = await connection.query(query, [categoryId]);
 
         return result.affectedRows;
     }
 
-    async changeStatus(connection,categoryId,status){
+    // Change Status.
+    async changeStatus(connection, categoryId, status) {
         const query = `Update categories Set status = ? where id = ?`;
 
-        const [result] = await connection.query(query,[status,categoryId]);
+        const [result] = await connection.query(query, [status, categoryId]);
 
         return result.affectedRows;
 

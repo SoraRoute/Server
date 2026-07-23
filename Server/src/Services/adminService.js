@@ -1,3 +1,10 @@
+/**
+ * Admin Module
+ * 
+ * Author : Pinki
+ * Business logic for admin authentication.
+ */
+
 const db = require("../Config/dbConnection");
 const bcrypt = require("bcrypt");
 
@@ -8,10 +15,11 @@ const otpGenerator = require("../Utils/otpGenerator");
 const sendMail = require("../Utils/sendMail");
 const constants = require("../Constants/OTPPurpose");
 
-class AdminService{
+class AdminService {
 
+    // Login Admin.
     async loginAdmin(loginData) {
-        
+
         const connection = await db.getConnection();
         try {
             const email = loginData.email.trim().toLowerCase();
@@ -48,6 +56,7 @@ class AdminService{
         }
     }
 
+    // Get Admin Profile.
     async getAdminProfile(adminId) {
 
         const connection = await db.getConnection();
@@ -59,11 +68,12 @@ class AdminService{
             }
             return admin[0];
 
-        }finally {
+        } finally {
             connection.release();
         }
     }
 
+    // Change Admin Password.
     async changeAdminPassword(adminId, passwordData) {
         const connection = await db.getConnection();
 
@@ -119,19 +129,20 @@ class AdminService{
                 message: "Password changed successfully."
             };
 
-        }catch(error){
+        } catch (error) {
             await connection.rollback();
             throw error;
 
-        }finally {
+        } finally {
             connection.release();
         }
     }
 
+    // Send Admin Otp.
     async sendAdminOtp(email) {
 
         const connection = await db.getConnection();
-        try{
+        try {
             await connection.beginTransaction();
             email = email.trim().toLowerCase();
 
@@ -176,15 +187,16 @@ class AdminService{
                 message: "OTP sent successfully."
             };
 
-        }catch(error){
+        } catch (error) {
             await connection.rollback();
             throw error;
 
-        }finally{
+        } finally {
             connection.release();
         }
     }
 
+    // Verify Admin Otp.
     async verifyAdminOtp(connection, email, otp, purpose) {
 
         const otpData = await AdminRepository.findOtpByEmail(connection, email, purpose);
@@ -203,7 +215,7 @@ class AdminService{
             otpData.otp_hash
         );
 
-        if(!isMatch){
+        if (!isMatch) {
             throw new Error("Invalid OTP.");
         }
 
@@ -212,6 +224,7 @@ class AdminService{
         };
     }
 
+    // Verify Otp.
     async verifyOtp(email, otp, purpose) {
         const connection = await db.getConnection();
 
@@ -230,20 +243,21 @@ class AdminService{
             await connection.commit();
             return result;
 
-        }catch(error){
+        } catch (error) {
             await connection.rollback();
             throw error;
 
-        }finally{
+        } finally {
             connection.release();
         }
     }
 
+    // Reset Password.
     async resetPassword(email, otp, newPassword) {
 
         const connection = await db.getConnection();
 
-        try{
+        try {
 
             await connection.beginTransaction();
 
@@ -273,19 +287,19 @@ class AdminService{
                 email,
                 hashedPassword
             );
-            
+
             await AdminRepository.deleteOtp(connection, email, constants.RESET_PASSWORD);
             await connection.commit();
 
-            return{
+            return {
                 message: "Password changed successfully."
             };
 
-        }catch(error){
+        } catch (error) {
             await connection.rollback();
             throw error;
 
-        }finally{
+        } finally {
             connection.release();
         }
     }

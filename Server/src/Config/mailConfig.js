@@ -1,10 +1,11 @@
 /**
+ *  Authors: Nishtha & Pinki
+ * 
  * Shared Module
  *
  * Used by Customer and Seller modules.
  * Configures the email transporter for sending emails.
  *
- * Authors: Nishtha & Pinki
  */
 
 require("dotenv").config();

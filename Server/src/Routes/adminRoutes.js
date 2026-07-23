@@ -1,3 +1,11 @@
+/**
+ * Author : Pinki
+ *
+ * Admin Authentication Routes
+ * Handles admin authentication, profile management,
+ * password operations, and logout functionality.
+ */
+
 const express = require("express");
 
 const AdminController = require("../Controllers/adminController");
@@ -10,6 +18,7 @@ const loginValidator = require("../middleware/adminLoginValidation");
 
 const router = express.Router();
 
+// Admin login
 router.post(
     "/login",
     loginValidator,
@@ -17,21 +26,25 @@ router.post(
     AdminController.loginAdmin
 );
 
+// Send OTP for password reset
 router.post(
     "/send-otp",
     AdminController.sendAdminOtp
 );
 
+// Verify OTP
 router.post(
     "/verify-otp",
     AdminController.verifyAdminOtp
 );
 
+// Reset admin password
 router.put(
     "/reset-password",
     AdminController.resetPassword
 );
 
+// Get admin profile
 router.get(
     "/profile",
     authMiddleware,
@@ -39,15 +52,17 @@ router.get(
     AdminController.getAdminProfile
 );
 
+// Change admin password
 router.put(
     "/change-password",
     authMiddleware,
     roleMiddleware("admin"),
     AdminController.changeAdminPassword
 );
-//add this logout route
-router.post("/logout", 
-    authMiddleware, 
+
+// Logout admin
+router.post("/logout",
+    authMiddleware,
     AdminController.logout
 );
 

@@ -1,6 +1,16 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Handles HTTP requests for viewing all products and
+ * approving/removing products from the admin panel.
+ */
+
 const adminProductService = require("../Services/adminProductService");
 
 class AdminProductController{
+
+    // Get All Products.
     async getAllProducts(req,res){
         try{
             const products = await adminProductService.getAllProducts();
@@ -19,6 +29,7 @@ class AdminProductController{
         }
     }
 
+    // Get Product By Id.
     async getProductById(req,res){
         try{
             const{productId} = req.params;
@@ -38,6 +49,7 @@ class AdminProductController{
         }
     }
 
+    // Update Product Status.
     async updateProductStatus(req, res){
         try{
             const {productId} = req.params;
@@ -61,6 +73,8 @@ class AdminProductController{
         }
     }
 
+
+    // Delete Product.
     async deleteProduct(req, res){
         try{
             const{ productId } = req.params;

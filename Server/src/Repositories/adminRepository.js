@@ -1,5 +1,13 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Database queries for admin authentication.
+ */
+
 class AdminRepository {
 
+    // Find Admin By Email.
     async findAdminByEmail(connection, email) {
         const query = `
             SELECT *
@@ -12,6 +20,7 @@ class AdminRepository {
         return rows;
     }
 
+    // Find Admin By ID
     async findAdminById(connection, adminId) {
         const query = `
             SELECT
@@ -31,6 +40,7 @@ class AdminRepository {
         return rows;
     }
 
+    // Find Amind Password By Given ID.
     async findAdminPasswordById(connection, adminId) {
         const query = `
             SELECT password
@@ -43,6 +53,7 @@ class AdminRepository {
         return rows;
     }
 
+    // Update Admin Password By Id.
     async updateAdminPasswordById(connection, adminId, newPassword) {
         const query = `
             UPDATE users
@@ -60,6 +71,7 @@ class AdminRepository {
         return result.affectedRows;
     }
 
+    // Update Admin Password By Email.
     async updateAdminPasswordByEmail(connection, email, newPassword) {
         const query = `
             UPDATE users
@@ -77,6 +89,7 @@ class AdminRepository {
         return result.affectedRows;
     }
 
+    // Save Otp.
     async saveOtp(connection, email, otpHash, purpose, expiresAt) {
         await connection.query(
             `
@@ -92,6 +105,7 @@ class AdminRepository {
         );
     }
 
+    // Find Otp By Email.
     async findOtpByEmail(connection, email, purpose) {
         const [rows] = await connection.query(
             `
@@ -106,6 +120,7 @@ class AdminRepository {
         return rows[0];
     }
 
+    // Delete Otp.
     async deleteOtp(connection, email, purpose) {
         await connection.query(
             `

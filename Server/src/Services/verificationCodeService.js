@@ -1,32 +1,11 @@
 /**
- * Shared Module
+ * Author : Nishtha
  *
- * This file is used by both Customer and Seller modules.
- * Changes to this file may affect multiple parts of the application.
- * Discuss breaking changes with the team before modifying.
+ * Verification Code Service
+ * Handles OTP generation, email delivery,
+ * verification, and expiration management.
  */
 
-/**
- * ---------------------------------------------------------
- * Verification Code Service
- * ---------------------------------------------------------
- * Handles OTP business logic.
- *
- * Responsibilities:
- * - Generate OTP
- * - Save OTP
- * - Send email
- * - Verify OTP
- * - Handle OTP expiration
- *
- * Uses:
- * - otpGenerator
- * - sendMail
- * - verificationCodeRepository
- *
- * Author: Shared Module
- * ---------------------------------------------------------
- */
 const passwordUtil = require("../Utils/password");
 const otpGenerator = require("../Utils/otpGenerator");
 const sendMail = require("../Utils/sendMail");
@@ -34,13 +13,7 @@ const verificationCodeRepository = require("../Repositories/verificationCodeRepo
 
 class VerificationCodeService {
 
-    /**
-     * Generates an OTP, hashes it, stores it in the database,
-     * and sends it to the user's email.
-     *
-     * @param {string} email
-     * @param {string} purpose
-     */
+    // Generate and send OTP to the user's email
     async sendVerificationCode(email, purpose) {
 
         // Generate a 6-digit OTP
@@ -49,10 +22,10 @@ class VerificationCodeService {
         // Hash the OTP before storing
         const otpHash = await passwordUtil.hashPassword(otp);
 
-        // OTP expires in 10 minutes
+        // Set OTP expiration time
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-        // Remove any previous OTP for this email & purpose
+        // Remove any existing OTP for the same email and purpose
         await verificationCodeRepository.deleteVerificationCode(
             email,
             purpose
@@ -84,26 +57,22 @@ class VerificationCodeService {
         );
     }
 
-    /**
-     * Verifies the OTP entered by the user.
-     *
-     * @param {string} email
-     * @param {string} purpose
-     * @param {string} enteredOTP
-     * @returns {boolean}
-     */
+    // Verify the entered OTP
     async verifyCode(email, purpose, enteredOTP) {
 
+        // Retrieve stored OTP
         const verificationCode =
             await verificationCodeRepository.findVerificationCode(
                 email,
                 purpose
             );
 
+        // Check if OTP exists
         if (!verificationCode) {
             throw new Error("OTP not found.");
         }
 
+        // Check if OTP has expired
         if (new Date() > verificationCode.expires_at) {
 
             await verificationCodeRepository.deleteVerificationCode(
@@ -114,12 +83,14 @@ class VerificationCodeService {
             throw new Error("OTP has expired.");
         }
 
+        // Compare entered OTP with stored hash
         const isMatch =
             await passwordUtil.comparePassword(
                 enteredOTP,
                 verificationCode.otp_hash
             );
 
+        // Reject invalid OTP
         if (!isMatch) {
             throw new Error("Invalid OTP.");
         }
@@ -129,6 +100,7 @@ class VerificationCodeService {
             email,
             purpose
         );
+
         return true;
     }
 

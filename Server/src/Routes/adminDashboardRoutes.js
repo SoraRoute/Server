@@ -1,3 +1,10 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Route for the admin dashboard summary statistics.
+ */
+
 const express = require("express");
 const router = express.Router();
 

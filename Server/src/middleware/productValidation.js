@@ -1,39 +1,47 @@
+/**
+ * Author : Pinki
+ * 
+ * Seller Module
+ * Validation rules for adding/updating products,
+ * used with express-validator.
+ */
+
 const { body } = require("express-validator");
 
 const addProductValidation = [
     body("category_id")
-    .notEmpty()
-    .withMessage("Category ID is required.")
-    .isInt({min:1})
-    .withMessage("Category ID must be a positive Integer."),
+        .notEmpty()
+        .withMessage("Category ID is required.")
+        .isInt({ min: 1 })
+        .withMessage("Category ID must be a positive Integer."),
 
     body("title")
-    .trim()
-    .notEmpty()
-    .withMessage("Title is required.")
-    .isLength({max:255})
-    .withMessage("Title cannot exceed 255 characters."),
+        .trim()
+        .notEmpty()
+        .withMessage("Title is required.")
+        .isLength({ max: 255 })
+        .withMessage("Title cannot exceed 255 characters."),
 
     body("price")
-    .notEmpty()
-    .withMessage("Price is required.")
-    .isFloat("{gt:0")
-    .withMessage("Discount price must be greater than 0."),
+        .notEmpty()
+        .withMessage("Price is required.")
+        .isFloat("{gt:0")
+        .withMessage("Discount price must be greater than 0."),
 
     body("brand")
-    .optional()
-    .trim()
-    .isLength({max:100})
-    .withMessage("Brand cannot exceed 100 characters."),
+        .optional()
+        .trim()
+        .isLength({ max: 100 })
+        .withMessage("Brand cannot exceed 100 characters."),
 
     body("description")
-    .optional()
-    .trim(),
+        .optional()
+        .trim(),
 
     body("status")
-    .optional()
-    .isIn(["ACTIVE","INACTIVE"])
-    .withMessage("Invalid product status."),
+        .optional()
+        .isIn(["ACTIVE", "INACTIVE"])
+        .withMessage("Invalid product status."),
 ];
 
 module.exports = {

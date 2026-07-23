@@ -1,8 +1,17 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Business logic for viewing and updating orders
+ * from the admin panel.
+ */
+
 const db = require("../Config/dbConnection");
 const adminOrderRepository = require("../Repositories/adminOrderReopsitory");
 
 class AdminOrderService {
 
+    // Get All Orders.
     async getAllOrders() {
         const connection = await db.getConnection();
 
@@ -24,6 +33,7 @@ class AdminOrderService {
         }
     }
 
+    // Get Order By Id.
     async getOrderById(orderId) {
         const connection = await db.getConnection();
 
@@ -52,6 +62,7 @@ class AdminOrderService {
         }
     }
 
+    // Update Order Status.
     async updateOrderStatus(orderId, orderStatus) {
 
         const connection = await db.getConnection();

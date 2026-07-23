@@ -1,60 +1,80 @@
-class SellerRepository{
+/**
+ * Author : Pinki
+ * 
+ * Seller Module
+ * Database queries for seller registration, authentication,
+ * profile, business details, and bank details.
+ */
 
-    async saveOtp(connection,email,otpHash,purpose,expires_at){
+
+class SellerRepository {
+
+    // Save Otp
+    async saveOtp(connection, email, otpHash, purpose, expires_at) {
         await connection.query(`
             Insert Into verification_codes("
                 email,
                 otp_hash,
                 purpose,
                 expires_at) 
-                values (?,?,?,?)`,[email,otpHash,purpose,expires_at]          
+                values (?,?,?,?)`, [email, otpHash, purpose, expires_at]
         );
     }
 
-    async findSellerByEmail(connection,email){
+
+    // Find Seller By Email.
+    async findSellerByEmail(connection, email) {
         const [rows] = await connection.query(
-            "Select * from sellers where email = ?",[email]
+            "Select * from sellers where email = ?", [email]
         );
         return rows[0];
     }
 
-    async findOtpByEmail(connection,email,purpose){
+
+    // Find Otp By Email.
+    async findOtpByEmail(connection, email, purpose) {
         const [rows] = await connection.query(`
                 Select * from verification_codes where email = ? and purpose = ?`,
-                [email,purpose]
-            );
+            [email, purpose]
+        );
 
         return rows[0];
     }
 
-    async deleteOtp(connection,email,purpose){
+
+    // Delete Otp.
+    async deleteOtp(connection, email, purpose) {
         await connection.query(`
             Delete from verification_codes where email = ? and purpose = ?`,
-            [email,purpose]
+            [email, purpose]
         );
     }
 
-    async createSeller(connection,seller){
-        const[result] = await connection.query(
+
+    // Create Seller.
+    async createSeller(connection, seller) {
+        const [result] = await connection.query(
             `Insert Into sellers(
                 seller_name,
                 email,
                 mobile,
                 passwordd,gstin) 
                 Values (?,?,?,?,?)`,
-                [
-                    seller.seller_name,
-                    seller.email,
-                    seller.mobile,
-                    seller.passwordd,
-                    seller.gstin
-                ]
+            [
+                seller.seller_name,
+                seller.email,
+                seller.mobile,
+                seller.passwordd,
+                seller.gstin
+            ]
         );
 
         return result.insertId;
     }
 
-    async createAddress(connection, sellerId,address) {
+
+    // Create Address.
+    async createAddress(connection, sellerId, address) {
 
         await connection.query(
             `INSERT INTO addresses
@@ -81,6 +101,8 @@ class SellerRepository{
 
     }
 
+
+    // Create Business Details.
     async createBusinessDetails(connection, sellerId, business) {
 
         await connection.query(
@@ -107,6 +129,8 @@ class SellerRepository{
         );
     }
 
+
+    // Create Bank Details.
     async createBankDetails(connection, sellerId, bank) {
 
         await connection.query(
@@ -129,23 +153,28 @@ class SellerRepository{
         );
     }
 
-    async getSellerById(connection,id){
+
+    // Get Seller By Id.
+    async getSellerById(connection, id) {
         const [rows] = await connection.query(
-                "SELECT id,seller_name,email,mobile FROM sellers WHERE id = ?",
-                [id]
+            "SELECT id,seller_name,email,mobile FROM sellers WHERE id = ?",
+            [id]
         );
 
         return rows[0];
     }
 
-    async updateSellerPassword(connection,email,hashedPassword){
+
+    // Update Seller Password.
+    async updateSellerPassword(connection, email, hashedPassword) {
         await connection.query(
             "update sellers set passwordd = ? where email = ?",
-            [hashedPassword,email]
+            [hashedPassword, email]
         );
     }
 
-    async updateSellerProfile(connection,sellerId,sellerData){
+    // Update Seller Profile.
+    async updateSellerProfile(connection, sellerId, sellerData) {
         const query = `
         UPDATE sellers
         SET
@@ -155,18 +184,19 @@ class SellerRepository{
         WHERE id = ?;
     `;
 
-    const [result] = await connection.execute(query, [
-        sellerData.sellerName,
-        sellerData.mobile,
-        sellerData.gstin,
-        sellerId
-    ]);
+        const [result] = await connection.execute(query, [
+            sellerData.sellerName,
+            sellerData.mobile,
+            sellerData.gstin,
+            sellerId
+        ]);
 
-    return result;
+        return result;
 
     }
 
-    async checkSellerExists(connection, mobile, gstin, sellerId){
+    // Check Seller Exists.
+    async checkSellerExists(connection, mobile, gstin, sellerId) {
         const query = `
             SELECT id
             FROM sellers
@@ -183,7 +213,8 @@ class SellerRepository{
         return rows[0];
     }
 
-    async updatePassword(connection, sellerId, hashedPassword){
+    // Update Password.
+    async updatePassword(connection, sellerId, hashedPassword) {
         const query = `
             UPDATE sellers
             SET passwordd = ?
@@ -198,7 +229,8 @@ class SellerRepository{
         return result;
     }
 
-    async getSellerPassword(connection, sellerId){
+    // Get Seller Password.
+    async getSellerPassword(connection, sellerId) {
         const query = `
             SELECT passwordd
             FROM sellers
@@ -211,7 +243,8 @@ class SellerRepository{
 
     }
 
-    async getSellerOrders(connection, sellerId){
+    // Get Seller Orders.
+    async getSellerOrders(connection, sellerId) {
         const query = `
             SELECT
                 oi.id AS order_item_id,
@@ -237,7 +270,8 @@ class SellerRepository{
         return rows;
     }
 
-    async getSellerRevenue(connection, sellerId){
+    // Get Seller Revenue.
+    async getSellerRevenue(connection, sellerId) {
         const query = `
             SELECT
                 COALESCE(SUM(oi.quantity * oi.price), 0) AS totalRevenue
@@ -255,7 +289,9 @@ class SellerRepository{
         return rows[0];
     }
 
-    async getOrderById(connection, orderId, sellerId){
+
+    // Get Order By Id.
+    async getOrderById(connection, orderId, sellerId) {
         const query = `
             SELECT
                 o.id,
@@ -277,7 +313,9 @@ class SellerRepository{
         return rows[0];
     }
 
-    async updateOrderStatus(connection, orderId, orderStatus){
+
+    // Update Order Status.
+    async updateOrderStatus(connection, orderId, orderStatus) {
         const query = `
             UPDATE orders
             SET order_status = ?
@@ -291,7 +329,6 @@ class SellerRepository{
 
         return result;
     }
-
 
 }
 

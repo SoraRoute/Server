@@ -1,5 +1,14 @@
-class AdminDashboardRepository{
-    async getDashboardStatistics(connection){
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Database queries used to compute admin dashboard statistics.
+ */
+
+class AdminDashboardRepository {
+
+    // Get Dashboard Statistics.
+    async getDashboardStatistics(connection) {
         const query = `
         SELECT 
             (SELECT COUNT(*) FROM sellers) as totalSellers,

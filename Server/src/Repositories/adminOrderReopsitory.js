@@ -1,5 +1,15 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Database queries for fetching and updating orders
+ * from the admin panel.
+ */
+
+
 class AdminOrderRepository {
 
+    // Get All Orders.
     async getAllOrders(connection) {
         const query = `
             SELECT
@@ -21,6 +31,7 @@ class AdminOrderRepository {
         return rows;
     }
 
+    // Get Order By Id.
     async getOrderById(connection, orderId) {
         const query = `
             SELECT
@@ -50,6 +61,7 @@ class AdminOrderRepository {
         return rows;
     }
 
+    // Update Order Status.
     async updateOrderStatus(connection, orderId, orderStatus) {
         const query = `
             UPDATE orders

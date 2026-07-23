@@ -1,38 +1,28 @@
 /**
+ * Author : Nishtha
+ * 
  * Shared Module
- *
- * This file is used by both Customer and Seller modules.
- * Changes to this file may affect multiple parts of the application.
- * Discuss breaking changes with the team before modifying.
+ * This utility is used by both the Customer and Seller modules.
+ * Any changes to this file may impact multiple parts of the application.
  */
+
 /**
- * ---------------------------------------------------------
- * Async Handler
- * ---------------------------------------------------------
- * Wraps async route handlers and forwards errors
- * to the global error middleware.
+ * Wraps asynchronous route handlers and forwards any errors
+ * to the Express error-handling middleware.
  *
- * Eliminates repetitive try/catch blocks.
- *
- * Author: Shared Module
- * ---------------------------------------------------------
+ * @param {Function} controller - Asynchronous route handler.
+ * @returns {Function} Express middleware function.
  */
+
 const asyncHandler = (controller) => {
 
     return async (req, res, next) => {
-
         try {
-
             await controller(req, res, next);
-
         } catch (error) {
-
             next(error);
-
         }
-
     };
-
 };
 
 module.exports = asyncHandler;

@@ -4,6 +4,7 @@ require("dotenv").config();
 // Authors: Nishtha & Pinki
 
 // Create a connection pool for the MySQL database.
+
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -15,6 +16,7 @@ const db = mysql.createPool({
 });
 
 // Check if the database connection is successful.
+
 db.getConnection()
   .then((connection) => {
     console.log("MYSQL connected");

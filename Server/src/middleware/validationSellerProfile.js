@@ -1,3 +1,11 @@
+/**
+ * Author : Pinki
+ * 
+ * Seller Module
+ * Validation rules for updating a seller's profile,
+ * used with express-validator.
+ */
+
 const { body } = require("express-validator");
 const validationMiddleware = require("./validationMiddleware");
 

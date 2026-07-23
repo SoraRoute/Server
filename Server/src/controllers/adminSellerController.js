@@ -1,7 +1,16 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Handles HTTP requests for viewing sellers and approving/
+ * suspending seller accounts.
+ */
+
 const AdminSellerService = require("../Services/adminSellerService");
 
 class AdminSellerController{
 
+    // Get All Sellers.
     async getAllSellers(req,res){
         try{
             const sellers = await AdminSellerService.getAllSellers();
@@ -20,6 +29,7 @@ class AdminSellerController{
         }
     }
 
+    // Get Seller By Id.
     async getSellerById(req,res){
         try{
             const sellerId = req.params.id;
@@ -40,6 +50,7 @@ class AdminSellerController{
         }    
     }
 
+    // Update Seller Status.
     async updateSellerStatus(req, res) {
         try {
 

@@ -1,7 +1,16 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Handles HTTP requests for viewing all orders and updating
+ * order status from the admin panel.
+ */
+
 const adminOrderService = require("../Services/adminOrderService");
 
 class AdminOrderController {
 
+    //Get All Orders.
     async getAllOrders(req, res) {
         try {
 
@@ -19,6 +28,7 @@ class AdminOrderController {
         }
     }
 
+    // Get Order By Id.
     async getOrderById(req, res) {
         try {
 
@@ -38,6 +48,7 @@ class AdminOrderController {
         }
     }
 
+    // Update Order Status.
     async updateOrderStatus(req, res) {
         try {
 

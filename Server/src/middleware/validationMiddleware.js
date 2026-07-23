@@ -1,40 +1,35 @@
 /**
+ * Author : Nishtha & Pinki
+ * 
  * Shared Module
- *
- * This file is used by both Customer and Seller modules.
- * Changes to this file may affect multiple parts of the application.
- * Discuss breaking changes with the team before modifying.
+ * This middleware is shared across the Customer, Seller, and Admin modules.
+ * Any changes to this file may impact request validation throughout the application.
  */
+
+
 /**
- * ---------------------------------------------------------
- * Validation Middleware
- * ---------------------------------------------------------
- * Validates incoming request data before reaching controllers.
- *
- * Prevents invalid or incomplete data from being processed.
- *
- * Used with express-validator.
- *
- * Author: Shared Module
- * ---------------------------------------------------------
+ * Validates incoming request data using express-validator
+ * before passing the request to the controller.
  */
+
+
 const { validationResult } = require("express-validator");
 
 const validationMiddleware = (req, res, next) => {
 
-    // Collect all validation errors
+    // Retrieve validation errors from the request
     const errors = validationResult(req);
 
-    // If validation fails, return the error response
+    // Return validation errors if any exist
     if (!errors.isEmpty()) {
         return res.status(400).json({
             success: false,
             message: "Validation failed.",
-            errors: errors.array()
+            errors: errors.array(),
         });
     }
 
-    // Continue to the next middleware/controller
+    // Continue to the next middleware
     next();
 };
 

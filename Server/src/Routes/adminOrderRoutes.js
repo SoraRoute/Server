@@ -1,3 +1,11 @@
+/**
+ * Author : Pinki
+ * 
+ * Admin Module
+ * Routes for viewing, approving, and removing products
+ * from the admin panel.
+ */
+
 const express = require("express");
 
 const adminOrderController = require("../controllers/adminOrderController");

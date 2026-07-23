@@ -1,4 +1,13 @@
-const {v2:cloudinary} = require("cloudinary");
+/**
+ * Authors : Nishtha & Pinki
+ * 
+ * Shared Module
+ *
+ * Configures the Cloudinary SDK using credentials from
+ * environment variables. Used for storing product images.
+ */
+
+const { v2: cloudinary } = require("cloudinary");
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

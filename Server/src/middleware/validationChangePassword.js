@@ -1,3 +1,11 @@
+/**
+ * Author : Nishtha & Pinki
+ * 
+ * Shared Module
+ * Validation rules for the change-password request body,
+ * used with express-validator.
+ */
+
 const { body } = require("express-validator");
 const validationMiddleware = require("../middleware/validationMiddleware");
 

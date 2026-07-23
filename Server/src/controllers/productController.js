@@ -1,9 +1,18 @@
+/**
+ * Author : Pinki
+ * 
+ * Seller Module
+ * Handles HTTP requests for a seller's own products:
+ * create, list, view, update, delete, and status changes.
+ */
+
 const { deleteProduct } = require("../Repositories/productRepository");
 const productServices = require("../Services/productServices");
 const ProductService = require("../Services/productServices");
 
 class ProductController{
 
+    // Add Product.
     async addProduct(req,res,next){
         try{
             const sellerId = req.user.sellerId;
@@ -23,6 +32,7 @@ class ProductController{
         }
     }
 
+    // Get Seller Products.
     async getSellerProducts(req,res){
         try{
             const sellerId = req.user.sellerId;
@@ -42,6 +52,7 @@ class ProductController{
         }
     }
 
+    // Get Product By Id.
     async getProductById(req,res){
         try{
             const sellerId = req.user.sellerId;
@@ -64,6 +75,7 @@ class ProductController{
 
     }
 
+    // Update Product.
     async updateProduct(req,res){
         try{
             const sellerId = req.user.sellerId;
@@ -88,6 +100,7 @@ class ProductController{
         }
     }
 
+    // Delete Product.
     async deleteProduct(req,res){
         try{
             const sellerId = req.user.sellerId;
@@ -108,6 +121,7 @@ class ProductController{
         }
     }
 
+    // Update Status.
     async updateStatus(req,res){
         try{
             const sellerId = req.user.sellerId;

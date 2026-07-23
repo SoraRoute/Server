@@ -1,64 +1,46 @@
 /**
+ * Author : Nishtha & Pinki
+ * 
  * Shared Module
- *
- * This file is used by both Customer and Seller modules.
- * Changes to this file may affect multiple parts of the application.
- * Discuss breaking changes with the team before modifying.
+ * This middleware is shared across the Customer, Seller, and Admin modules.
+ * Any changes to this file may impact role-based access control throughout the application.
  */
+
 /**
- * ---------------------------------------------------------
- * Role Middleware
- * ---------------------------------------------------------
- * Restricts access based on user roles.
- *
- * Example:
- *
- * authorize(["ADMIN"])
- *
- * authorize(["SELLER"])
- *
- * authorize(["CUSTOMER"])
- *
- * Shared across all protected routes.
- *
- * Author: Shared Module
- * ---------------------------------------------------------
+ * Authorizes requests by allowing access only to users
+ * whose roles match the permitted roles.
  */
+
 const roleMiddleware = (...allowedRoles) => {
 
     return (req, res, next) => {
 
         try {
-
-            // Check if authentication middleware has attached user data
+            // Ensure the user is authenticated
             if (!req.user) {
                 return res.status(401).json({
                     success: false,
-                    message: "Unauthorized access."
+                    message: "Unauthorized access.",
                 });
             }
 
-            // Check whether the user's role is allowed
+            // Check whether the user's role is permitted
             if (!allowedRoles.includes(req.user.role)) {
                 return res.status(403).json({
                     success: false,
-                    message: "Access denied."
+                    message: "Access denied.",
                 });
             }
 
             next();
 
         } catch (error) {
-
             return res.status(500).json({
                 success: false,
-                message: error.message
+                message: error.message,
             });
-
         }
-
     };
-
 };
 
 module.exports = roleMiddleware;

@@ -1,25 +1,38 @@
+/**
+ * Shared Module
+ * Authors : Pinki & Nishtha
+ * 
+ * Used by the Seller module for product images.
+ * Wraps Cloudinary upload/delete calls and removes the
+ * temporary local file once the upload succeeds.
+ *
+ * Authors: Nishtha & Pinki
+ */
+
 const cloudinary = require("../Config/cloudinary");
 const fs = require("fs");
 
-class CloudinaryHelper{
+class CloudinaryHelper {
 
-    async uploadImage(filePath){
-        const result = await cloudinary.uploader.upload(filePath,{
+    // Upload Image.
+    async uploadImage(filePath) {
+        const result = await cloudinary.uploader.upload(filePath, {
             folder: "products"
         });
 
         fs.unlinkSync(filePath);
 
-        return{
+        return {
             image_url: result.secure_url,
             public_id: result.public_id
         };
     }
 
-    async uploadMultipleImages(files){
+    // Upload Multiple Images.
+    async uploadMultipleImages(files) {
         const uploadedImages = [];
 
-        for(const file of files){
+        for (const file of files) {
             const image = await this.uploadImage(file.path);
             uploadedImages.push(image);
         }
@@ -27,15 +40,17 @@ class CloudinaryHelper{
         return uploadedImages;
     }
 
-    async deleteImage(publicId){
+    // Delete Image.
+    async deleteImage(publicId) {
         await cloudinary.uploader.destroy(publicId);
     }
 
-    async deleteMultipleImages(publicIds){
-        for(const publicId of publicIds){
+    // Delete Multiple Images.
+    async deleteMultipleImages(publicIds) {
+        for (const publicId of publicIds) {
             await this.deleteImage(publicId);
         }
     }
 }
 
-module.exports  = new CloudinaryHelper();
+module.exports = new CloudinaryHelper();

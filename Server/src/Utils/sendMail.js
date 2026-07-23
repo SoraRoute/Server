@@ -10,23 +10,24 @@
 const transporter = require("../Config/mailConfig");
 
 class SendMail {
-  // Send an email to the given recipient.
-  async sendEmail(to, subject, html) {
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to,
-      subject,
-      html,
-    };
+    
+    // Send an email to the given recipient.
+    async sendEmail(to, subject, html) {
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to,
+            subject,
+            html,
+        };
 
-    try {
-      await transporter.sendMail(mailOptions);
-      console.log(`Email sent successfully to ${to}`);
-    } catch (error) {
-      console.error("Email sending failed:", error.message);
-      throw new Error("Unable to send email.");
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log(`Email sent successfully to ${to}`);
+        } catch (error) {
+            console.error("Email sending failed:", error.message);
+            throw new Error("Unable to send email.");
+        }
     }
-  }
 }
 
 module.exports = new SendMail();
