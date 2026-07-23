@@ -98,7 +98,10 @@ class CustomerController {
   // Get the logged-in customer's profile.
   async getCustomerProfile(req, res) {
     try {
-      const result = await customerService.getCustomerProfile(req.customerId);
+     
+      const result = await customerService.getCustomerProfile(
+      req.user.customerId
+    );
 
       return res.status(200).json(result);
     } catch (error) {
@@ -113,7 +116,7 @@ class CustomerController {
   async updateCustomerProfile(req, res) {
     try {
       const result = await customerService.updateCustomerProfile(
-        req.customerId,
+        req.user.customerId,
         req.body,
       );
 
