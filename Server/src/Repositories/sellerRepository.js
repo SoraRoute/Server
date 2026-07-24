@@ -12,7 +12,7 @@ class SellerRepository {
     // Save Otp
     async saveOtp(connection, email, otpHash, purpose, expires_at) {
         await connection.query(`
-            Insert Into verification_codes("
+            Insert Into verification_codes(
                 email,
                 otp_hash,
                 purpose,
