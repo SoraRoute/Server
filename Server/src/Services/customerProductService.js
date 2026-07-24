@@ -12,27 +12,53 @@ const customerProductRepository = require("../Repositories/customerProductReposi
 
 class CustomerProductService {
 
+    // Group product images into a single product object.
+    groupProducts(products) {
+        
+        const groupedProducts = new Map();
+
+        for (const product of products) {
+            if (!groupedProducts.has(product.id)) {
+                groupedProducts.set(product.id, {
+                    ...product,
+                    images: [],
+                });
+
+                delete groupedProducts.get(product.id).image_url;
+            }
+
+            if (product.image_url) {
+                groupedProducts.get(product.id).images.push({
+                    image_url: product.image_url,
+                });
+            }
+        }
+
+        return Array.from(groupedProducts.values());
+    }
+
     // Get all available products.
     async getAllProducts() {
         const products = await customerProductRepository.getAllProducts();
-
+          console.log(products);
+    console.log(Array.isArray(products));
         return {
             success: true,
-            products,
+            products: this.groupProducts(products),
         };
     }
 
     // Get details of a specific product.
     async getProductById(productId) {
-        const product = await customerProductRepository.getProductById(productId);
+        const products = await customerProductRepository.getProductById(productId);
 
-        if (!product) {
+        if (products.length === 0) {
             throw new Error("Product not found");
         }
 
         return {
             success: true,
-            product,
+            product: this.groupProducts(products)[0],
         };
     }
 
@@ -42,7 +68,7 @@ class CustomerProductService {
 
         return {
             success: true,
-            products,
+            products: this.groupProducts(products),
         };
     }
 
@@ -60,7 +86,7 @@ class CustomerProductService {
 
         return {
             success: true,
-            products,
+            products: this.groupProducts(products),
         };
     }
 }

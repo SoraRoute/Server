@@ -39,11 +39,11 @@ class CustomerProductRepository {
                 ON p.id = pi.product_id
             WHERE p.id = ?
             AND p.status = 'ACTIVE'
-            LIMIT 1 
+            
         `;
 
         const [rows] = await db.query(sql, [productId]);
-        return rows[0];
+        return rows;
     }
 
     // Search products by title.
