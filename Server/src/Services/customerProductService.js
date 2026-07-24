@@ -40,8 +40,7 @@ class CustomerProductService {
     // Get all available products.
     async getAllProducts() {
         const products = await customerProductRepository.getAllProducts();
-          console.log(products);
-    console.log(Array.isArray(products));
+       
         return {
             success: true,
             products: this.groupProducts(products),
