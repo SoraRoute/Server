@@ -9,7 +9,7 @@
  */
 
 const db = require("../Config/dbConnection");
-const CategoryRepository = require("../Repositories/CategoryRepository");
+const CategoryRepository = require("../Repositories/categoryRepository");
 const productRepository = require("../Repositories/productRepository");
 
 class CategoryService {
