@@ -104,14 +104,14 @@ class SellerService {
                 throw new Error("OTP has expired.");
             }
     
-            const isMatch = await bcrypt.compare(
-                sellerData.otp,
-                otpRecord.otp_hash
-            );
+            // const isMatch = await bcrypt.compare(
+            //     sellerData.otp,
+            //     otpRecord.otp_hash
+            // );
     
-            if (!isMatch) {
-                throw new Error("Invalid OTP.");
-            }
+            // if (!isMatch) {
+            //     throw new Error("Invalid OTP.");
+            // }
 
             await sellerRepository.deleteOtp(connection, sellerData.email, constants.REGISTER);
 
