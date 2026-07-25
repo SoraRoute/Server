@@ -7,7 +7,7 @@
  * authentication, and password updates.
  */
 
-const db = require("../config/dbConnection");
+const db = require("../Config/dbConnection");
 
 class CustomerRepository {
 
