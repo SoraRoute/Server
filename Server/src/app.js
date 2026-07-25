@@ -6,8 +6,6 @@
  * for seller, customer, admin, products, categories, and AI modules.
  */
 
-require("dns").setDefaultResultOrder("ipv4first");
-
 // Load environment variables
 require("dotenv").config();
 
@@ -16,8 +14,6 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-
-console.log("CLIENT_URL:", JSON.stringify(process.env.CLIENT_URL));
 // Enable CORS for frontend requests
 app.use(
     cors({

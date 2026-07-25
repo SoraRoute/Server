@@ -63,17 +63,16 @@ class SellerController {
     async registerSeller(req, res) {
         try {
             const sellerData = req.body;
-            const authHeader = req.headers.authorization;
+            // const authHeader = req.headers.authorization;
 
-            if (!authHeader || !authHeader.startsWith("Bearer ")) {
-                throw new Error("Verification token is required.");
-            }
+            // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            //     throw new Error("Verification token is required.");
+            // }
 
-            const verificationToken = authHeader.split(" ")[1];
+            // const verificationToken = authHeader.split(" ")[1];
 
             const result = await sellerService.registerSeller(
-                sellerData,
-                verificationToken,
+                sellerData
             );
 
             return res.status(201).json({

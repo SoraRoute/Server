@@ -74,50 +74,97 @@ class SellerService {
     }
 
     // Register Seller.
-    async registerSeller(sellerData, verificationToken) {
+    async registerSeller(sellerData) {
         const connection = await db.getConnection();
-
+    
         try {
-
             await connection.beginTransaction();
-
-            const decodedToken = jwtProvider.verifyVerificationToken(verificationToken);
-
-            if (decodedToken.email !== sellerData.email) {
-                throw new Error("Email Does not match the verified Email.");
-            }
-
+    
             const existingSeller = await sellerRepository.findSellerByEmail(
-                connection, sellerData.email
+                connection,
+                sellerData.email
             );
-
+    
             if (existingSeller) {
-                throw new Error("Email Already Registered.")
+                throw new Error("Email already registered.");
+            }
+    
+            // Verify OTP
+            const otpRecord = await sellerRepository.findOtpByEmail(
+                connection,
+                sellerData.email,
+                constants.REGISTER
+            );
+    
+            if (!otpRecord) {
+                throw new Error("Please verify email first.");
+            }
+    
+            if (new Date() > new Date(otpRecord.expires_at)) {
+                throw new Error("OTP has expired.");
+            }
+    
+            const isMatch = await bcrypt.compare(
+                sellerData.otp,
+                otpRecord.otp_hash
+            );
+    
+            if (!isMatch) {
+                throw new Error("Invalid OTP.");
             }
 
-            const hashedPassword = await bcrypt.hash(sellerData.passwordd, 10);
-            sellerData.passwordd = hashedPassword;
+            await sellerRepository.deleteOtp(connection, sellerData.email, constants.REGISTER);
 
-            const sellerId = await sellerRepository.createSeller(connection, sellerData);
-
-            await sellerRepository.createAddress(connection, sellerId, sellerData.address);
-
-            await sellerRepository.createBusinessDetails(connection, sellerId, sellerData.business);
-
-            await sellerRepository.createBankDetails(connection, sellerId, sellerData.bank);
-
+            // Hash Password
+            sellerData.passwordd = await bcrypt.hash(
+                sellerData.passwordd,
+                10
+            );
+    
+            // Create Seller
+            const sellerId = await sellerRepository.createSeller(
+                connection,
+                sellerData
+            );
+    
+            // Create Address
+            await sellerRepository.createAddress(
+                connection,
+                sellerId,
+                sellerData.address
+            );
+    
+            // Create Business Details
+            await sellerRepository.createBusinessDetails(
+                connection,
+                sellerId,
+                sellerData.business
+            );
+    
+            // Create Bank Details
+            await sellerRepository.createBankDetails(
+                connection,
+                sellerId,
+                sellerData.bank
+            );
+    
+            // Delete OTP
+            await sellerRepository.deleteOtp(
+                connection,
+                sellerData.email,
+                constants.REGISTER
+            );
+    
             await connection.commit();
-
+    
             return {
-                message: "Seller Registered Successfully",
+                message: "Seller registered successfully",
                 sellerId
             };
-
+    
         } catch (error) {
-
             await connection.rollback();
             throw error;
-
         } finally {
             connection.release();
         }
@@ -146,16 +193,12 @@ class SellerService {
                 throw new Error("Invalid OTP.");
             }
 
-            await sellerRepository.deleteOtp(connection, email, purpose);
-
             let result = {
                 message: "OTP Verified Successfully."
             };
 
             if (purpose === constants.REGISTER) {
                 result.message = "Email Verified Sucessfully.";
-                result.verificationToken = jwtProvider.generateVerificationToken(email);
-
             }
 
             await connection.commit();

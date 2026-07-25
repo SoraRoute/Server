@@ -52,20 +52,29 @@ class SellerRepository {
 
 
     // Create Seller.
-    async createSeller(connection, seller) {
-        const [result] = await connection.query(
-            `Insert Into sellers(
+    async createSeller(connection, sellerData) {
+        const query = `
+            INSERT INTO sellers(
                 seller_name,
                 email,
                 mobile,
-                passwordd,gstin) 
-                Values (?,?,?,?,?)`,
+                passwordd,
+                gstin,
+                role,
+                is_verified
+            )VALUES(?,?,?,?,?,?,?)
+        `;
+
+        const [result] = await connection.execute(
+            query,
             [
-                seller.seller_name,
-                seller.email,
-                seller.mobile,
-                seller.passwordd,
-                seller.gstin
+                sellerData.seller_name,
+                sellerData.email,
+                sellerData.mobile,
+                sellerData.passwordd,
+                sellerData.gstin,
+                "seller",
+                true
             ]
         );
 
