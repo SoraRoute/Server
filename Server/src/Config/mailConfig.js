@@ -14,9 +14,8 @@ const nodemailer = require("nodemailer");
 // Create a reusable transporter for sending emails.
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4, // Force IPv4
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
