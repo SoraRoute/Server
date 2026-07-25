@@ -24,7 +24,14 @@ class SendMail {
             await transporter.sendMail(mailOptions);
             console.log(`Email sent successfully to ${to}`);
         } catch (error) {
-            console.error("Email sending failed:", error.message);
+            console.error("========== SMTP ERROR ==========");
+            console.error(error);
+            console.error("Code:", error.code);
+            console.error("Command:", error.command);
+            console.error("Response:", error.response);
+            console.error("Stack:", error.stack);
+            console.error("================================");
+        
             throw new Error("Unable to send email.");
         }
     }
