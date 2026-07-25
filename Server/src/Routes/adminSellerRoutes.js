@@ -15,10 +15,10 @@ const adminSellerController =
 
 
 const authMiddleware =
-    require("../Middleware/authMiddleware");
+    require("../middleware/authMiddleware");
 
 const roleMiddleware =
-    require("../Middleware/roleMiddleware");
+    require("../middleware/roleMiddleware");
 
 
 // Get all sellers
