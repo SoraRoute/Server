@@ -6,7 +6,7 @@
  * including creating, retrieving, updating, and deleting addresses.
  */
 
-const db = require("../config/dbConnection");
+const db = require("../Config/dbConnection");
 
 class CustomerAddressRepository {
 
