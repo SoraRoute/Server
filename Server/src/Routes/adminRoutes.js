@@ -8,7 +8,7 @@
 
 const express = require("express");
 
-const AdminController = require("../Controllers/adminController");
+const AdminController = require("../controllers/adminController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
