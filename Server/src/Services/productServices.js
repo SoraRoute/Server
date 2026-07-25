@@ -183,7 +183,7 @@ class ProductService {
                 throw new Error("Invalid product status.");
             }
 
-            const product = productRepository.getProductById(productId, sellerId);
+            const product = await productRepository.getProductById(connection,productId, sellerId);
 
             if (!product) {
                 throw new Error("Product Not Found");
