@@ -7,7 +7,7 @@
  * used across the Customer, Seller, and Admin modules.
  */
 
-const db = require("../config/dbConnection");
+const db = require("../Config/dbConnection");
 
 class VerificationCodeRepository {
 
