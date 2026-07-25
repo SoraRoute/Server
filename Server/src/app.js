@@ -6,6 +6,7 @@
  * for seller, customer, admin, products, categories, and AI modules.
  */
 
+require("dns").setDefaultResultOrder("ipv4first");
 
 // Load environment variables
 require("dotenv").config();
