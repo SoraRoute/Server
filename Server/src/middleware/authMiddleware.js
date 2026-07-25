@@ -12,7 +12,7 @@
  * information to the request object.
  */
 
-const jwtProvider = require("../utils/jwtProvider");
+const jwtProvider = require("../Utils/jwtProvider");
 
 const authMiddleware = (req, res, next) => {
 
