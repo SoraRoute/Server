@@ -11,7 +11,7 @@ const express = require("express");
 const router = express.Router();
 
 const adminSellerController =
-    require("../Controllers/adminSellerController");
+    require("../controllers/adminSellerController");
 
 
 const authMiddleware =
