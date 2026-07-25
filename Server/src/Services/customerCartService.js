@@ -7,7 +7,7 @@
  * retrieving, and removing cart items.
  */
 
-const customerCartRepository = require("../Repositories/customerCartRepository");
+const customerCartRepository = require("../Repositories/customercartRepository");
 const customerRepository = require("../Repositories/customerRepository");
 const productRepository = require("../Repositories/productRepository");
 
