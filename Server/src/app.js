@@ -16,6 +16,7 @@ const cors = require("cors");
 const app = express();
 
 
+console.log("CLIENT_URL:", JSON.stringify(process.env.CLIENT_URL));
 // Enable CORS for frontend requests
 app.use(
     cors({
