@@ -13,12 +13,11 @@ const sellerRepository = require("../Repositories/sellerRepository");
 const jwtProvider = require("../Utils/jwtProvider");
 const otpGenerator = require("../Utils/otpGenerator");
 const sendMail = require("../Utils/sendMail");
-const constants = require("../Constants/OTPPurpose")
-
+const constants = require("../Constants/OTPPurpose");
 
 class SellerService {
 
-    // Send Seller Otp.
+    // Send Seller OTP.
     async sendSellerOtp(email, purpose) {
 
         const connection = await db.getConnection();
@@ -26,13 +25,17 @@ class SellerService {
         try {
             await connection.beginTransaction();
 
-            const existingSeller = await sellerRepository.findSellerByEmail(connection, email);
+            const existingSeller =
+                await sellerRepository.findSellerByEmail(
+                    connection,
+                    email
+                );
 
             if (purpose === constants.REGISTER && existingSeller) {
                 throw new Error("Seller Already Registered.");
             }
 
-            if (purpose === "RESET_PASSWORD" && !existingSeller) {
+            if (purpose === constants.RESET_PASSWORD && !existingSeller) {
                 throw new Error("Seller does not exist.");
             }
 
@@ -40,19 +43,34 @@ class SellerService {
 
             const otpHash = await bcrypt.hash(otp, 10);
 
-            const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+            const expiresAt = new Date(
+                Date.now() + 10 * 60 * 1000
+            );
 
-            await sellerRepository.deleteOtp(connection, email, purpose);
+            await sellerRepository.deleteOtp(
+                connection,
+                email,
+                purpose
+            );
 
-            await sellerRepository.saveOtp(connection, email, otpHash, purpose, expiresAt);
+            await sellerRepository.saveOtp(
+                connection,
+                email,
+                otpHash,
+                purpose,
+                expiresAt
+            );
 
-            const subject = purpose === constants.REGISTER ? "Seller Registration OTP" : " Reset Password OTP";
+            const subject =
+                purpose === constants.REGISTER
+                    ? "Seller Registration OTP"
+                    : "Reset Password OTP";
 
             await sendMail.sendEmail(
                 email,
                 subject,
                 `
-                   <h2>Your OTP is ${otp}</h2>
+                    <h2>Your OTP is ${otp}</h2>
                     <p>This OTP is valid for 10 minutes.</p>
                 `
             );
@@ -64,161 +82,184 @@ class SellerService {
             };
 
         } catch (error) {
+
             await connection.rollback();
             throw error;
 
         } finally {
-            connection.release();
 
+            connection.release();
         }
     }
 
     // Register Seller.
     async registerSeller(sellerData) {
+
         const connection = await db.getConnection();
-    
+
         try {
+
             await connection.beginTransaction();
-    
-            const existingSeller = await sellerRepository.findSellerByEmail(
-                connection,
-                sellerData.email
-            );
-    
+
+            const existingSeller =
+                await sellerRepository.findSellerByEmail(
+                    connection,
+                    sellerData.email
+                );
+
             if (existingSeller) {
                 throw new Error("Email already registered.");
             }
-    
-            // Verify OTP
-            const otpRecord = await sellerRepository.findOtpByEmail(
-                connection,
-                sellerData.email,
-                constants.REGISTER
-            );
-    
+
+            // Find registration OTP.
+            const otpRecord =
+                await sellerRepository.findOtpByEmail(
+                    connection,
+                    sellerData.email,
+                    constants.REGISTER
+                );
+
             if (!otpRecord) {
                 throw new Error("Please verify email first.");
             }
-    
+
+            // Check OTP expiry.
             if (new Date() > new Date(otpRecord.expires_at)) {
                 throw new Error("OTP has expired.");
             }
-    
-            // const isMatch = await bcrypt.compare(
-            //     sellerData.otp,
-            //     otpRecord.otp_hash
-            // );
-    
-            // if (!isMatch) {
-            //     throw new Error("Invalid OTP.");
-            // }
 
-            await sellerRepository.deleteOtp(connection, sellerData.email, constants.REGISTER);
+            /*
+             * OTP verification is handled separately through
+             * verifySellerOtp() before registration.
+             */
 
-            // Hash Password
-            sellerData.passwordd = await bcrypt.hash(
-                sellerData.passwordd,
-                10
-            );
-    
-            // Create Seller
-            const sellerId = await sellerRepository.createSeller(
-                connection,
-                sellerData
-            );
-    
-            // Create Address
-            await sellerRepository.createAddress(
-                connection,
-                sellerId,
-                sellerData.address
-            );
-    
-            // Create Business Details
-            await sellerRepository.createBusinessDetails(
-                connection,
-                sellerId,
-                sellerData.business
-            );
-    
-            // Create Bank Details
-            await sellerRepository.createBankDetails(
-                connection,
-                sellerId,
-                sellerData.bank
-            );
-    
-            // Delete OTP
+            // Delete OTP after successful verification.
             await sellerRepository.deleteOtp(
                 connection,
                 sellerData.email,
                 constants.REGISTER
             );
-    
+
+            // Hash Password.
+            sellerData.passwordd = await bcrypt.hash(
+                sellerData.passwordd,
+                10
+            );
+
+            // Create Seller.
+            const sellerId =
+                await sellerRepository.createSeller(
+                    connection,
+                    sellerData
+                );
+
+            // Create Address.
+            await sellerRepository.createAddress(
+                connection,
+                sellerId,
+                sellerData.address
+            );
+
+            // Create Business Details.
+            await sellerRepository.createBusinessDetails(
+                connection,
+                sellerId,
+                sellerData.business
+            );
+
+            // Create Bank Details.
+            await sellerRepository.createBankDetails(
+                connection,
+                sellerId,
+                sellerData.bank
+            );
+
             await connection.commit();
-    
+
             return {
                 message: "Seller registered successfully",
                 sellerId
             };
-    
+
         } catch (error) {
+
             await connection.rollback();
             throw error;
+
         } finally {
+
             connection.release();
         }
     }
 
-    // Verify Seller Otp.
+    // Verify Seller OTP.
     async verifySellerOtp(email, otp, purpose) {
+
         const connection = await db.getConnection();
 
         try {
+
             await connection.beginTransaction();
 
-            const otpRecord = await sellerRepository.findOtpByEmail(connection, email, purpose);
+            const otpRecord =
+                await sellerRepository.findOtpByEmail(
+                    connection,
+                    email,
+                    purpose
+                );
 
             if (!otpRecord) {
                 throw new Error("OTP not found or has expired.");
             }
 
-            if (otpRecord.expires_at < new Date()) {
+            if (new Date() > new Date(otpRecord.expires_at)) {
                 throw new Error("OTP has expired.");
             }
 
-            const isMatch = await bcrypt.compare(otp, otpRecord.otp_hash);
+            const isMatch = await bcrypt.compare(
+                otp,
+                otpRecord.otp_hash
+            );
 
             if (!isMatch) {
                 throw new Error("Invalid OTP.");
             }
 
-            let result = {
-                message: "OTP Verified Successfully."
-            };
-
-            if (purpose === constants.REGISTER) {
-                result.message = "Email Verified Sucessfully.";
-            }
-
             await connection.commit();
 
-            return result;
+            let message = "OTP Verified Successfully.";
+
+            if (purpose === constants.REGISTER) {
+                message = "Email Verified Successfully.";
+            }
+
+            return {
+                message
+            };
 
         } catch (error) {
+
             await connection.rollback();
             throw error;
 
         } finally {
+
             connection.release();
         }
     }
 
     // Login Seller.
     async loginSeller(loginData) {
+
         const connection = await db.getConnection();
+
         try {
-            const existingSeller = await sellerRepository.findSellerByEmail(connection, loginData.email);
+
+            const existingSeller =
+                await sellerRepository.findSellerByEmail(
+                    connection,
+                    loginData.email
+                );
 
             if (!existingSeller) {
                 throw new Error("Invalid Email or Password");
@@ -242,90 +283,160 @@ class SellerService {
 
             return {
                 message: "Login Successful",
-                token: token
+                token
             };
-        }
-        catch (error) {
-            await connection.rollback();
+
+        } catch (error) {
+
             throw error;
-        }
-        finally {
+
+        } finally {
+
             connection.release();
         }
     }
 
     // Reset Password.
     async resetPassword(email, otp, newPassword) {
+
         const connection = await db.getConnection();
 
         try {
+
             await connection.beginTransaction();
 
-            const seller = await sellerRepository.findSellerByEmail(connection, email);
+            const seller =
+                await sellerRepository.findSellerByEmail(
+                    connection,
+                    email
+                );
 
             if (!seller) {
                 throw new Error("Seller does not exist.");
             }
 
-            await this.verifySellerOtp(email, otp, "RESET_PASSWORD");
+            // Find reset-password OTP using the same connection.
+            const otpRecord =
+                await sellerRepository.findOtpByEmail(
+                    connection,
+                    email,
+                    constants.RESET_PASSWORD
+                );
 
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            if (!otpRecord) {
+                throw new Error("OTP not found or has expired.");
+            }
 
-            await sellerRepository.updateSellerPassword(connection, email, hashedPassword);
+            if (new Date() > new Date(otpRecord.expires_at)) {
+                throw new Error("OTP has expired.");
+            }
+
+            const isMatch = await bcrypt.compare(
+                otp,
+                otpRecord.otp_hash
+            );
+
+            if (!isMatch) {
+                throw new Error("Invalid OTP.");
+            }
+
+            const hashedPassword =
+                await bcrypt.hash(newPassword, 10);
+
+            await sellerRepository.updateSellerPassword(
+                connection,
+                email,
+                hashedPassword
+            );
+
+            // Delete OTP after successful password reset.
+            await sellerRepository.deleteOtp(
+                connection,
+                email,
+                constants.RESET_PASSWORD
+            );
 
             await connection.commit();
 
             return {
-                message: "Password Changed Sucessfully."
+                message: "Password Changed Successfully."
             };
 
         } catch (error) {
+
             await connection.rollback();
             throw error;
-        }
-        finally {
+
+        } finally {
+
             connection.release();
         }
     }
 
     // Get Seller Profile.
     async getSellerProfile(id) {
+
         const connection = await db.getConnection();
 
         try {
-            const existingSeller = await sellerRepository.getSellerById(connection, id);
+
+            const existingSeller =
+                await sellerRepository.getSellerById(
+                    connection,
+                    id
+                );
 
             if (!existingSeller) {
-                throw new Error("Seller Do Not Exist.");
+                throw new Error("Seller Does Not Exist.");
             }
 
             return existingSeller;
 
         } finally {
+
             connection.release();
         }
     }
 
     // Update Seller Profile.
     async updateSellerProfile(sellerId, sellerData) {
+
         const connection = await db.getConnection();
 
         try {
+
             await connection.beginTransaction();
 
-            const existingSeller = await sellerRepository.getSellerById(connection, sellerId);
+            const existingSeller =
+                await sellerRepository.getSellerById(
+                    connection,
+                    sellerId
+                );
 
             if (!existingSeller) {
                 throw new Error("Seller does not exist.");
             }
 
-            const existingSellerWithSameData = await sellerRepository.checkSellerExists(connection, sellerData.mobile, sellerData.gstin, sellerId);
+            const existingSellerWithSameData =
+                await sellerRepository.checkSellerExists(
+                    connection,
+                    sellerData.mobile,
+                    sellerData.gstin,
+                    sellerId
+                );
 
             if (existingSellerWithSameData) {
-                throw new Error("Mobile number or GSTIN already exists.");
+                throw new Error(
+                    "Mobile number or GSTIN already exists."
+                );
             }
 
-            const result = await sellerRepository.updateSellerProfile(connection, sellerId, sellerData);
+            const result =
+                await sellerRepository.updateSellerProfile(
+                    connection,
+                    sellerId,
+                    sellerData
+                );
 
             if (result.affectedRows === 0) {
                 throw new Error("Failed to update profile.");
@@ -339,61 +450,76 @@ class SellerService {
             };
 
         } catch (error) {
+
             await connection.rollback();
             throw error;
-        }
-        finally {
+
+        } finally {
+
             connection.release();
         }
     }
 
     // Change Password.
     async changePassword(sellerId, passwordData) {
+
         const connection = await db.getConnection();
 
         try {
+
             await connection.beginTransaction();
 
-            const seller = await sellerRepository.getSellerPassword(
-                connection,
-                sellerId
-            );
+            const seller =
+                await sellerRepository.getSellerPassword(
+                    connection,
+                    sellerId
+                );
 
             if (!seller) {
                 throw new Error("Seller does not exist.");
             }
 
-            const isPasswordValid = await bcrypt.compare(
-                passwordData.oldPassword,
-                seller.passwordd
-            );
+            const isPasswordValid =
+                await bcrypt.compare(
+                    passwordData.oldPassword,
+                    seller.passwordd
+                );
 
             if (!isPasswordValid) {
-                throw new Error("Current password is incorrect.");
+                throw new Error(
+                    "Current password is incorrect."
+                );
             }
 
-            const isSamePassword = await bcrypt.compare(
-                passwordData.newPassword,
-                seller.passwordd
-            );
+            const isSamePassword =
+                await bcrypt.compare(
+                    passwordData.newPassword,
+                    seller.passwordd
+                );
 
             if (isSamePassword) {
-                throw new Error("New password cannot be the same as the current password.");
+                throw new Error(
+                    "New password cannot be the same as the current password."
+                );
             }
 
-            const hashedPassword = await bcrypt.hash(
-                passwordData.newPassword,
-                10
-            );
+            const hashedPassword =
+                await bcrypt.hash(
+                    passwordData.newPassword,
+                    10
+                );
 
-            const result = await sellerRepository.updatePassword(
-                connection,
-                sellerId,
-                hashedPassword
-            );
+            const result =
+                await sellerRepository.updatePassword(
+                    connection,
+                    sellerId,
+                    hashedPassword
+                );
 
             if (result.affectedRows === 0) {
-                throw new Error("Failed to change password.");
+                throw new Error(
+                    "Failed to change password."
+                );
             }
 
             await connection.commit();
@@ -404,22 +530,28 @@ class SellerService {
             };
 
         } catch (error) {
+
             await connection.rollback();
             throw error;
+
         } finally {
+
             connection.release();
         }
     }
 
     // Get Seller Orders.
     async getSellerOrders(sellerId) {
+
         const connection = await db.getConnection();
 
         try {
-            const orders = await sellerRepository.getSellerOrders(
-                connection,
-                sellerId
-            );
+
+            const orders =
+                await sellerRepository.getSellerOrders(
+                    connection,
+                    sellerId
+                );
 
             return {
                 success: true,
@@ -428,23 +560,27 @@ class SellerService {
             };
 
         } catch (error) {
+
             throw error;
 
         } finally {
+
             connection.release();
         }
     }
 
     // Get Seller Revenue.
     async getSellerRevenue(sellerId) {
+
         const connection = await db.getConnection();
 
         try {
 
-            const revenue = await sellerRepository.getSellerRevenue(
-                connection,
-                sellerId
-            );
+            const revenue =
+                await sellerRepository.getSellerRevenue(
+                    connection,
+                    sellerId
+                );
 
             return {
                 success: true,
@@ -453,15 +589,21 @@ class SellerService {
             };
 
         } catch (error) {
+
             throw error;
 
         } finally {
+
             connection.release();
         }
     }
 
     // Update Order Status.
-    async updateOrderStatus(orderId, sellerId, orderStatus) {
+    async updateOrderStatus(
+        orderId,
+        sellerId,
+        orderStatus
+    ) {
 
         const connection = await db.getConnection();
 
@@ -480,24 +622,28 @@ class SellerService {
                 throw new Error("Invalid order status.");
             }
 
-            const existingOrder = await sellerRepository.getOrderById(
-                connection,
-                orderId,
-                sellerId
-            );
+            const existingOrder =
+                await sellerRepository.getOrderById(
+                    connection,
+                    orderId,
+                    sellerId
+                );
 
             if (!existingOrder) {
                 throw new Error("Order not found.");
             }
 
-            const result = await sellerRepository.updateOrderStatus(
-                connection,
-                orderId,
-                orderStatus
-            );
+            const result =
+                await sellerRepository.updateOrderStatus(
+                    connection,
+                    orderId,
+                    orderStatus
+                );
 
             if (result.affectedRows === 0) {
-                throw new Error("Failed to update order status.");
+                throw new Error(
+                    "Failed to update order status."
+                );
             }
 
             await connection.commit();
@@ -513,10 +659,10 @@ class SellerService {
             throw error;
 
         } finally {
+
             connection.release();
         }
     }
-
 }
 
 module.exports = new SellerService();
