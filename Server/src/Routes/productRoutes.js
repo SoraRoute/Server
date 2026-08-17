@@ -50,6 +50,13 @@ router.put("/:id", authMiddleware,
     productController.updateProduct
 );
 
+// Add/remove images on an existing product (the "Edit Images" action)
+router.patch("/:id/images", authMiddleware,
+    roleMiddleware("seller"),
+    upload.array("images", 5),
+    productController.updateProductImages
+);
+
 // Delete a product
 router.delete("/:id", authMiddleware,
     roleMiddleware("seller"),

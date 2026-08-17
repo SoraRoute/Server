@@ -165,6 +165,39 @@ class ProductRepository {
         await connection.query(query, [productId]);
     }
 
+    // Count how many images a product currently has.
+    async countProductImages(connection, productId) {
+
+        const query = `Select Count(*) As total from product_images where product_id = ?`;
+
+        const [result] = await connection.query(query, [productId]);
+
+        return result[0].total;
+    }
+
+    // Get specific product images by their IDs (scoped to a product, so a
+    // seller can't delete images belonging to someone else's product).
+    async getProductImagesByIds(connection, productId, imageIds) {
+
+        const query = `
+        Select id, image_url, public_id
+        from product_images
+        where product_id = ? and id In (?)
+        `;
+
+        const [rows] = await connection.query(query, [productId, imageIds]);
+
+        return rows;
+    }
+
+    // Delete specific product images by their IDs.
+    async deleteProductImagesByIds(connection, productId, imageIds) {
+
+        const query = `Delete from product_images where product_id = ? and id In (?)`;
+
+        await connection.query(query, [productId, imageIds]);
+    }
+
 
     // Update Product Status.
     async updateStatus(connection, productId, sellerId, status) {

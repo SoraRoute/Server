@@ -42,7 +42,7 @@ const storage = multer.diskStorage({
 // Only allow common image formats, checked by both MIME type and file extension.
 const fileFilter = (req, file, cb) => {
 
-    const allowedTypes = /jpeg|jpg|png|webg/;
+    const allowedTypes = /jpeg|jpg|png|webp/;
 
     const isValid = allowedTypes.test(file.mimetype) && allowedTypes.test(path.extname(file.originalname).toLowerCase());
 

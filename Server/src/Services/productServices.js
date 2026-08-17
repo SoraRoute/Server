@@ -167,6 +167,84 @@ class ProductService {
         }
     }
 
+    // Update Product Images: add new images and/or remove existing ones.
+    async updateProductImages(productId, sellerId, files, imageIdsToDelete = []) {
+        const connection = await db.getConnection();
+
+        let uploadedImages = [];
+
+        try {
+            await connection.beginTransaction();
+
+            const product = await productRepository.getProductById(connection, productId, sellerId);
+
+            if (!product) {
+                throw new Error("Product Not Found");
+            }
+
+            // Remove requested images first (and clean them up on Cloudinary).
+            if (imageIdsToDelete.length > 0) {
+                const imagesToRemove = await productRepository.getProductImagesByIds(
+                    connection,
+                    productId,
+                    imageIdsToDelete
+                );
+
+                if (imagesToRemove.length > 0) {
+                    await productRepository.deleteProductImagesByIds(
+                        connection,
+                        productId,
+                        imagesToRemove.map(image => image.id)
+                    );
+
+                    await cloudinaryHelper.deleteMultipleImages(
+                        imagesToRemove.map(image => image.public_id)
+                    );
+                }
+            }
+
+            // Add new images, if any were uploaded.
+            if (files && files.length > 0) {
+                const existingCount = await productRepository.countProductImages(connection, productId);
+
+                if (existingCount + files.length > 5) {
+                    throw new Error("A product can have a maximum of 5 images.");
+                }
+
+                uploadedImages = await cloudinaryHelper.uploadMultipleImages(files);
+
+                await productRepository.addProductImages(connection, productId, uploadedImages);
+            }
+
+            const remainingCount = await productRepository.countProductImages(connection, productId);
+
+            if (remainingCount === 0) {
+                throw new Error("A product must have at least one image.");
+            }
+
+            await connection.commit();
+
+            const images = await productRepository.getProductImages(connection, productId);
+
+            return {
+                success: true,
+                message: "Product images updated successfully.",
+                images
+            };
+
+        } catch (error) {
+            await connection.rollback();
+
+            if (uploadedImages.length > 0) {
+                await cloudinaryHelper.deleteMultipleImages(uploadedImages.map(image => image.public_id));
+            }
+            throw error;
+
+        } finally {
+            connection.release();
+        }
+    }
+
     // Update Status.
     async updateStatus(productId, sellerId, status) {
         const connection = await db.getConnection();

@@ -121,6 +121,41 @@ class ProductController{
         }
     }
 
+    // Update Product Images.
+    async updateProductImages(req, res) {
+        try {
+            const sellerId = req.user.sellerId;
+            const productId = req.params.id;
+
+            // imageIdsToDelete may arrive as a JSON array string or repeated
+            // form fields, so normalize it into an array of numbers.
+            let imageIdsToDelete = req.body.imageIdsToDelete || [];
+            if (typeof imageIdsToDelete === "string") {
+                try {
+                    imageIdsToDelete = JSON.parse(imageIdsToDelete);
+                } catch {
+                    imageIdsToDelete = [imageIdsToDelete];
+                }
+            }
+            imageIdsToDelete = [].concat(imageIdsToDelete).map(Number).filter(Boolean);
+
+            const response = await ProductService.updateProductImages(
+                productId,
+                sellerId,
+                req.files,
+                imageIdsToDelete
+            );
+
+            return res.status(200).json(response);
+
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
     // Update Status.
     async updateStatus(req,res){
         try{

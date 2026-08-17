@@ -34,10 +34,14 @@ class CustomerHomeRepository {
             p.brand, 
             p.price, 
             p.discount_price,
-            pi.image_url
+            (
+                SELECT pi.image_url
+                FROM product_images pi
+                WHERE pi.product_id = p.id
+                ORDER BY pi.id ASC
+                LIMIT 1
+            ) AS image_url
         FROM products p
-        LEFT JOIN product_images pi
-            ON p.id = pi.product_id
         WHERE p.status = 'ACTIVE' 
         LIMIT 8`; 
  
@@ -56,10 +60,14 @@ class CustomerHomeRepository {
             p.price, 
             p.discount_price, 
             p.created_at,
-            pi.image_url
+            (
+                SELECT pi.image_url
+                FROM product_images pi
+                WHERE pi.product_id = p.id
+                ORDER BY pi.id ASC
+                LIMIT 1
+            ) AS image_url
         FROM products p
-        LEFT JOIN product_images pi
-            ON p.id = pi.product_id
         WHERE p.status = 'ACTIVE' 
         ORDER BY p.created_at DESC 
         LIMIT 8`; 
