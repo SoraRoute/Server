@@ -6,9 +6,10 @@
  */
 
 const app = require("./app");
+require("dotenv").config();
 
 // Port the HTTP server listens on.
-const PORT = 5000;
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
